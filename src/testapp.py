@@ -1,5 +1,7 @@
 import paho.mqtt.client as mqtt
-import os, urlparse
+import os 
+from dotenv import load_dotenv
+# urlparse
 
 # Define event callbacks
 def on_connect(client, userdata, flags, rc):
@@ -28,16 +30,27 @@ mqttc.on_subscribe = on_subscribe
 #mqttc.on_log = on_log
 
 # Parse CLOUDMQTT_URL (or fallback to localhost)
-url_str = os.environ.get('CLOUDMQTT_URL', 'mqtt://localhost:1883')
-url = urlparse.urlparse(url_str)
-topic = url.path[1:] or 'test'
+#url_str = os.environ.get('CLOUDMQTT_URL', 'mqtt://localhost:1883')
+#url = urlparse.urlparse(url_str)
+#topic = url.path[1:] or 'test'
+load_dotenv()
+
+# Setting env variables should be done somewhere else
+host = os.getenv("HOST")
+username = os.getenv("USERNAME")
+password = os.getenv("PASSWORD")
+port = int(os.getenv("PORT"))
+
+print(port)
+
+topic = "test"
 
 # Connect
-mqttc.username_pw_set(url.username, url.password)
-mqttc.connect(url.hostname, url.port)
+mqttc.username_pw_set(username, password)
+mqttc.connect(host, port)
 
 # Start subscribe, with QoS level 0
-mqttc.subscribe(topic, 0)
+mqttc.subscribe(topic)
 
 # Publish a message
 mqttc.publish(topic, "my message")
