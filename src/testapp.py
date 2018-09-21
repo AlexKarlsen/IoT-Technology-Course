@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import os 
 from dotenv import load_dotenv
+import json
 # urlparse
 
 # Define event callbacks
@@ -43,17 +44,29 @@ port = int(os.getenv("PORT"))
 
 print(port)
 
-topic = "test"
+topic = "temperature"
 
 # Connect
 mqttc.username_pw_set(username, password)
 mqttc.connect(host, port)
 
 # Start subscribe, with QoS level 0
-mqttc.subscribe(topic)
+mqttc.subscribe("Temp. threshold")
+
+class Measurement:
+  def __init__(self, type, value, unit):
+    self.type = type
+    self.value = value
+    self.unit = unit
+
+tempMeasurement = {
+    "type": "temperature", 
+    "value": 23, 
+    "unit": "celsius"
+}
 
 # Publish a message
-mqttc.publish(topic, "my message")
+mqttc.publish(tempMeasurement.get("type"), json.dumps(tempMeasurement))
 
 # Continue the network loop, exit when an error occurs
 rc = 0
