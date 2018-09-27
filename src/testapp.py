@@ -2,14 +2,21 @@ import paho.mqtt.client as mqtt
 import os 
 from dotenv import load_dotenv
 import json
-# urlparse
+import config
+import constants
+
+config.getSavedState()
 
 # Define event callbacks
 def on_connect(client, userdata, flags, rc):
-    print("rc: " + str(rc))
+    print("Connected to MQTT Broker")
 
 def on_message(client, obj, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+    if msg.topic == constants.topics["threshold"]:
+        tmp = json.loads(msg.payload.decode('utf8'))
+        #config.setThresholdValue(tmp["type"], tmp["value"])
+        #mqttc.publish("ReportedState","Updated")
 
 def on_publish(client, obj, mid):
     print("mid: " + str(mid))
@@ -30,28 +37,19 @@ mqttc.on_subscribe = on_subscribe
 # Uncomment to enable debug messages
 #mqttc.on_log = on_log
 
-# Parse CLOUDMQTT_URL (or fallback to localhost)
-#url_str = os.environ.get('CLOUDMQTT_URL', 'mqtt://localhost:1883')
-#url = urlparse.urlparse(url_str)
-#topic = url.path[1:] or 'test'
+# Getting environment variables
 load_dotenv()
-
-# Setting env variables should be done somewhere else
 host = os.getenv("HOST")
 username = os.getenv("USERNAME")
 password = os.getenv("PASSWORD")
 port = int(os.getenv("PORT"))
-
-print(port)
-
-topic = "temperature"
 
 # Connect
 mqttc.username_pw_set(username, password)
 mqttc.connect(host, port)
 
 # Start subscribe, with QoS level 0
-mqttc.subscribe("Temp. threshold")
+mqttc.subscribe("threshold")
 
 class Measurement:
   def __init__(self, type, value, unit):
@@ -72,4 +70,5 @@ mqttc.publish(tempMeasurement.get("type"), json.dumps(tempMeasurement))
 rc = 0
 while rc == 0:
     rc = mqttc.loop()
+
 print("rc: " + str(rc))
