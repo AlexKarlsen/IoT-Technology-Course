@@ -1,0 +1,76 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[headheight=26pt,left=2.5cm, right=2.5cm, bottom=2.5cm]{geometry}
+\usepackage[english]{babel}
+\usepackage{float}
+\usepackage[hidelinks]{hyperref}
+\usepackage{todonotes}
+\usepackage{mathtools}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage[font={small},format=plain,labelfont={it,bf},justification=justified,singlelinecheck=false,labelsep=period]{caption}
+\usepackage{subcaption}
+\usepackage{listings,chngcntr}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{cleveref}
+\usepackage{csquotes}
+\usepackage{tabularx} \usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage[numbers]{natbib}
+\usepackage{tcolorbox}
+\bibliographystyle{ieeetr}
+
+% ------------------------------------------------------------------------
+% Restyle floats
+% ------------------------------------------------------------------------
+%\floatstyle{plain}
+%\floatstyle{plaintop}
+%\restylefloat{table}
+%\restylefloat{listing}
+
+% ------------------------------------------------------------------------
+% Fonts & colors
+% ------------------------------------------------------------------------
+\definecolor{AUDefault}{RGB}{0,61,133}
+
+% ------------------------------------------------------------------------
+% Algorithms & code
+% ------------------------------------------------------------------------
+\crefname{lstlisting}{listing}{listings}
+\crefname{assumption}{assumption}{assumptions}
+\crefname{algorithm}{algorithm}{algorithm}
+
+% ------------------------------------------------------------------------
+% Counters, lists
+% ------------------------------------------------------------------------
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\numberwithin{equation}{section}
+\numberwithin{algorithm}{section}
+\setlist[itemize]{noitemsep}
+
+% ------------------------------------------------------------------------
+% Generel styling
+% ------------------------------------------------------------------------
+%\setlength\parindent{0pt}
+
+% ------------------------------------------------------------------------
+% Page style, headers & footers
+% ------------------------------------------------------------------------
+\setlength{\headsep}{0.5in}
+\linespread{1.1}
+\renewcommand{\headrulewidth}{0pt}
+\titleformat*{\section}{\large\bfseries}
+\pagestyle{fancyplain}
+\fancyfoot[l]{\footnotesize Page \thepage \:of \pageref{LastPage}}
+\fancyfoot[c]{ }
+\fancyhead[l]{R\&D - IBBD \\ Kelvin Pagels \& Kasper Klausen}
+\fancyhead[r]{AU - Department of Engineering \\ \today}
