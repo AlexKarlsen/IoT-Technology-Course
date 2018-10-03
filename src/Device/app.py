@@ -64,7 +64,7 @@ tempMeasurement = {
 }
 
 # Publish a message
-mqttc.publish(tempMeasurement.get("type"), json.dumps(tempMeasurement))
+mqttc.publish("telemetry", json.dumps(tempMeasurement))
 
 # Continue the network loop, exit when an error occurs
 rc = 0

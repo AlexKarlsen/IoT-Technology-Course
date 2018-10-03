@@ -1,7 +1,9 @@
+require('dotenv').config();
+
 var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');
 
-var url = 'mongodb://user:iottech18@ds115353.mlab.com:15353/heroku_wrtwbw3g';
+var url = process.env.MONGO_URL;
 
 exports.getDeviceSetting = function(req, res) {
   MongoClient.connect(url, function (err, db) {

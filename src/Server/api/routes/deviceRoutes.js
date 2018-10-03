@@ -3,7 +3,7 @@ var router = express.Router();
 var deviceController = require('../controllers/deviceController')
 var baseurl = "/device";
 
-router.route('/device/:id')
+router.route(baseurl + '/:id')
     .get(deviceController.getDeviceSetting);
     
 module.exports = router;

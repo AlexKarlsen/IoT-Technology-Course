@@ -6,7 +6,7 @@ telemetryController = require('./api/controllers/telemetryController');
 var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');
 
-var url = 'mongodb://user:iottech18@ds115353.mlab.com:15353/heroku_wrtwbw3g';
+var url = process.env.MONGO_URL
 
 class MqttHandler {
   constructor() {
@@ -20,9 +20,10 @@ class MqttHandler {
   }
 
   connect() {
-    let subscriptions = ["telemetry", "test"];
+    // Array of MQTT subscriptions
+    let subscriptions = ["telemetry", "report","test"];
 
-    // Connect mqtt with credentials (in case of needed, otherwise we can omit 2nd param)
+    // Connect mqtt with credentials
     this.mqttClient = mqtt.connect(this.host, this.options);
 
     // Mqtt error callback
@@ -36,25 +37,41 @@ class MqttHandler {
       console.log(`mqtt client connected`);
     });
 
-    // mqtt subscriptions
+    // Subscribe to required subscriptions
     this.mqttClient.subscribe(subscriptions, { qos: 0 });
 
-    // When a message arrives, console.log it
+    // When a message arrives handle it accordingly
     this.mqttClient.on('message', function (topic, message) {
+      // If message is telemetry store the message in the telemetry db
       if (topic == subscriptions[0]) {
-        // Use connect method to connect to the server
+        console.log(JSON.parse(message));
+        storeMessage(message)
+      }
+      else if (topic == subscriptions[1]){
+        json = JSON.parse(message);
         MongoClient.connect(url, function (err, db) {
           assert.equal(null, err);
           console.log("Connected successfully to server");
           // Get the documents collection
-          var collection = db.collection('telemetry');
-          // Insert some documents
-          collection.insertOne(JSON.parse(message), function (err, result) {
-            if (err) throw err;
-            console.log("1 document inserted");
-            db.close();
-          });
-        });
+          var collection = db.collection('deviceTwins');
+          // update
+          update = 'ReportedState.Threshold.';
+          collection.updateOne(
+              { deviceId: req.params.id },
+              { $set: {
+                  [update]: req.body
+                  }
+              },
+              function (err, result) {
+                  if (err) throw err;
+                  console.log(result);
+                  db.close();
+                  return res.status(200).json({
+                      message: "Threshold successfully updated"
+                  })
+              }
+          );
+      });
       }
     });
 
@@ -62,9 +79,29 @@ class MqttHandler {
       console.log(`mqtt client disconnected`);
     });
   }
-  // Sends a mqtt message to topic: mytopic
+  // Sends a mqtt message to topic
   sendMessage(topic, message) {
+    // Connect mqtt with credentials
+    this.mqttClient = mqtt.connect(this.host, this.options);
+    console.log("connected from send");
     this.mqttClient.publish(topic, message);
+    console.log("message sent");
+  }
+
+  storeMessage(message){
+    // Use connect method to connect to the server
+    MongoClient.connect(url, function (err, db) {
+      assert.equal(null, err);
+      console.log("Connected successfully to server");
+      // Get the documents collection
+      var collection = db.collection('telemetry');
+      // Insert some documents
+      collection.insertOne(JSON.parse(message), function (err, result) {
+        if (err) throw err;
+        console.log("1 document inserted");
+        db.close();
+      });
+    });
   }
 }
 module.exports = MqttHandler;
