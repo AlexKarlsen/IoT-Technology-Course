@@ -1,5 +1,5 @@
 require('dotenv').config();
-var mqttHandler = require('./mqttHandler');
+var mqttHandler = require('../../mqttHandler');
 
 var mqttClient = new mqttHandler();
 
@@ -32,8 +32,9 @@ exports.updateDeviceSetting = function(req, res) {
         // Get the documents collection
         var collection = db.collection('deviceTwins');
         // update
-        deviceId =  req.params.id
-        update = 'DesiredState.Threshold.' + req.params.type;
+        var deviceId =  req.params.id
+        var type = req.params.type;
+        update = 'DesiredState.Threshold.' + type;
         collection.updateOne(
             { deviceId: deviceId},
             { $set: {
@@ -42,8 +43,9 @@ exports.updateDeviceSetting = function(req, res) {
             },
             function (err, result) {
                 if (err) throw err;
-                mqttClient.sendMessage(deviceId, "twin update")
-                console.log(result);
+                var msgDev = { "type": type, "threshold": req.body }
+                mqttClient.sendMessage("device/" + deviceId, JSON.stringify(msgDev));
+                //console.log(result);
                 db.close();
                 return res.status(200).json({
                     message: "Threshold successfully updated"

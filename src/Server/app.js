@@ -9,6 +9,7 @@ var mqttHandler = require('./mqttHandler');
 //Bind connection to error event (to get notification of connection errors)
 const deviceRoutes = require('./api/routes/deviceRoutes');
 const serviceRoutes = require('./api/routes/serviceRoutes');
+const telemetryRoutes = require('./api/routes/telemetryRoutes');
 
 var app = express();
 
@@ -25,6 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/index'));
 app.use('/api', deviceRoutes);
 app.use('/api', serviceRoutes);
+app.use('/api', telemetryRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

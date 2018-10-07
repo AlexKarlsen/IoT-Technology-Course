@@ -21,7 +21,7 @@ class MqttHandler {
 
   connect() {
     // Array of MQTT subscriptions
-    let subscriptions = ["telemetry", "report","test"];
+    let subscriptions = ["telemetry", "report", "test", "device/myDevice"];
 
     // Connect mqtt with credentials
     this.mqttClient = mqtt.connect(this.host, this.options);
@@ -48,27 +48,25 @@ class MqttHandler {
         storeMessage(message)
       }
       else if (topic == subscriptions[1]){
-        json = JSON.parse(message);
+        var msg = JSON.parse(message);
         MongoClient.connect(url, function (err, db) {
           assert.equal(null, err);
           console.log("Connected successfully to server");
           // Get the documents collection
           var collection = db.collection('deviceTwins');
           // update
-          update = 'ReportedState.Threshold.';
+          //update = 'ReportedState.Threshold.';
+          console.log(msg)
           collection.updateOne(
-              { deviceId: req.params.id },
+              { deviceId: msg.DeviceId },
               { $set: {
-                  [update]: req.body
+                  "ReportedState": msg.ReportedState  
                   }
               },
               function (err, result) {
                   if (err) throw err;
-                  console.log(result);
+                  console.log("Reported")
                   db.close();
-                  return res.status(200).json({
-                      message: "Threshold successfully updated"
-                  })
               }
           );
       });
@@ -87,21 +85,28 @@ class MqttHandler {
     this.mqttClient.publish(topic, message);
     console.log("message sent");
   }
-
-  storeMessage(message){
-    // Use connect method to connect to the server
-    MongoClient.connect(url, function (err, db) {
-      assert.equal(null, err);
-      console.log("Connected successfully to server");
-      // Get the documents collection
-      var collection = db.collection('telemetry');
-      // Insert some documents
-      collection.insertOne(JSON.parse(message), function (err, result) {
-        if (err) throw err;
-        console.log("1 document inserted");
-        db.close();
-      });
+}
+function storeMessage(message){
+  // Use connect method to connect to the server
+  MongoClient.connect(url, function (err, db) {
+    assert.equal(null, err);
+    console.log("Connected successfully to server");
+    // Get the documents collection
+    var collection = db.collection('telemetry');
+    // Insert some documents
+    var msg = JSON.parse(message);
+    collection.updateOne({ 
+      DeviceId: msg.DeviceId
+      },
+      {
+        $push: { TelemetryData: msg.TelemetryData }
+      },
+      {
+        upsert: true
+      },function (err, result) {
+      if (err) throw err;
+      db.close();
     });
-  }
+  });
 }
 module.exports = MqttHandler;
