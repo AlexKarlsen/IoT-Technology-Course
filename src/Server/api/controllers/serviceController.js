@@ -1,7 +1,7 @@
 require('dotenv').config();
 var mqttHandler = require('../../mqttHandler');
 
-var mqttClient = new mqttHandler();
+var mqttClient = mqttHandler.getInstance();
 
 var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');

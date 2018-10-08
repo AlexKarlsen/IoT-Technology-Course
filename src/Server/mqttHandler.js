@@ -8,6 +8,24 @@ var MongoClient = require('mongodb').MongoClient,
 
 var url = process.env.MONGO_URL
 
+
+var mqttSingleton = (function () {
+  var instance;
+
+  function createInstance() {
+    return new MqttHandler();
+  }
+
+  return {
+    getInstance: function() {
+      if(!instance) {
+        instance = createInstance()
+      }
+      return instance;
+    }
+  }
+})();
+
 class MqttHandler {
   constructor() {
     this.mqttClient = null;
@@ -17,9 +35,11 @@ class MqttHandler {
       username: process.env.USERNAME,
       password: process.env.PASSWORD
     };
+    this.connect();
   }
 
   connect() {
+    console.log("connect");
     // Array of MQTT subscriptions
     let subscriptions = ["telemetry", "report", "test", "device/myDevice"];
 
@@ -80,8 +100,8 @@ class MqttHandler {
   // Sends a mqtt message to topic
   sendMessage(topic, message) {
     // Connect mqtt with credentials
-    this.mqttClient = mqtt.connect(this.host, this.options);
-    console.log("connected from send");
+    //this.mqttClient = mqtt.connect(this.host, this.options);
+    //console.log("connected from send");
     this.mqttClient.publish(topic, message);
     console.log("message sent");
   }
@@ -109,4 +129,4 @@ function storeMessage(message){
     });
   });
 }
-module.exports = MqttHandler;
+module.exports = mqttSingleton;

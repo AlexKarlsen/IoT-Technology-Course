@@ -35,8 +35,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-var mqttClient = new mqttHandler();
-mqttClient.connect();
+var mqttClient = mqttHandler.getInstance();
 
 // error handler
 app.use(function(err, req, res, next) {
