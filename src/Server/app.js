@@ -6,6 +6,11 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mqttHandler = require('./mqttHandler');
 
+//Bind connection to error event (to get notification of connection errors)
+const deviceRoutes = require('./api/routes/deviceRoutes');
+const serviceRoutes = require('./api/routes/serviceRoutes');
+const telemetryRoutes = require('./api/routes/telemetryRoutes');
+
 var app = express();
 
 // view engine setup
@@ -15,9 +20,13 @@ app.set('view engine', 'pug');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', require('./routes/index'));
+app.use('/api', deviceRoutes);
+app.use('/api', serviceRoutes);
+app.use('/api', telemetryRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -26,8 +35,7 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-var mqttClient = new mqttHandler();
-mqttClient.connect();
+var mqttClient = mqttHandler.getInstance();
 
 // error handler
 app.use(function(err, req, res, next) {

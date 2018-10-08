@@ -1,1 +1,1 @@
-{"threshold": {"temperature": {"value": 64, "unit": "celsius"}, "humidity": {"value": 23, "unit": "percentage"}}}
+{"_id": {"$oid": "5bae13bafb6fc01d131c1533"}, "deviceId": "myDevice", "DesiredState": {"Threshold": {"temperature": {"value": 73, "unit": "Celsius"}, "humidity": {"value": 20, "unit": "percent"}, "pressure": {"value": 11782, "unit": "bar"}}}, "ReportedState": {"Threshold": {"temperature": {"value": 73, "unit": "Celsius"}, "humidity": {"value": 20, "unit": "percent"}, "pressure": {"value": 11782, "unit": "bar"}}}}

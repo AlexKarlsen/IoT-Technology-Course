@@ -6,14 +6,27 @@ def getSavedState():
     global config
     with open("config.json", "r") as jsonFile:
         config = json.load(jsonFile)
-    print(config)
+    return config
 
-def getThresholdValue(field):
+def getReportedState(field):
     global config
-    return config["threshold"][field]["value"]
+    return config["ReportedState"]
 
 def setThresholdValue(field, value):
     global config
-    config["threshold"][field]["value"] = value
+    config["DesiredState"]["Threshold"][field] = value
+    config["ReportedState"]["Threshold"][field] = value
+    with open("config.json", "w+") as jsonFile:
+        json.dump(config, jsonFile)
+
+def setDesiredState(field):
+    global config
+    config["DesiredState"] = field
+    with open("config.json", "w+") as jsonFile:
+        json.dump(config, jsonFile)
+
+def setReportedState(field):
+    global config
+    config["ReportedState"] = field
     with open("config.json", "w+") as jsonFile:
         json.dump(config, jsonFile)
