@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
   }
 
   connect(): void {
-    let source = new EventSource('http://localhost:3000/stream');
+    let source = new EventSource('http://localhost:3000/api/telemetry/stream');
     source.addEventListener('message', event => {
       let msg = event['data'];
       console.log(msg); 
@@ -25,7 +25,7 @@ export class HomeComponent implements OnInit {
         if(json.TelemetryData.Type == 'Temperature') {
           this.temperature.data.push({t: new Date(json.TelemetryData.Timestamp), y : json.TelemetryData.Value})
         }
-        else if(json.Telemetry.Type == 'Humidity'){
+        else if(json.TelemetryData.Type == 'Humidity'){
           this.humidity.data.push({t: new Date(json.TelemetryData.Timestamp), y : json.TelemetryData.Value})
         }
         console.log(this.temperature) 

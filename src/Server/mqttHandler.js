@@ -73,7 +73,7 @@ class MqttHandler {
         var msg = JSON.parse(message);
         MongoClient.connect(url, function (err, db) {
           assert.equal(null, err);
-          console.log("Connected successfully to server");
+          console.log("Reporting...");
           // Get the documents collection
           var collection = db.collection('deviceTwins');
           // update
@@ -106,6 +106,11 @@ class MqttHandler {
     //console.log("connected from send");
     this.mqttClient.publish(topic, message);
     console.log("message sent");
+  }
+  receiveMessage() {
+    this.mqttClient.on('message', function (topic, message) {
+      return JSON.parse(message);
+    })
   }
 }
 function storeMessage(message){

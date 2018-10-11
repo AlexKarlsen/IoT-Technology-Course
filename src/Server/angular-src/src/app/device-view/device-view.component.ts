@@ -47,10 +47,15 @@ export class DeviceViewComponent implements OnInit {
   }
 
   isUpdatedCheck() {
-    if(this.device.DesiredState == this.device.ReportedState)
+    console.log(JSON.stringify(this.device.DesiredState) == JSON.stringify(this.device.ReportedState));
+    if(JSON.stringify(this.device.DesiredState) == JSON.stringify(this.device.ReportedState)){
       this.isUpdated = true;
-    else
+      console.log('Device is updated');
+    }
+    else{
       this.isUpdated = false;
+      console.log('device is not updated');
+    }
   }
 
   toggleEdit() {
@@ -66,7 +71,6 @@ export class DeviceViewComponent implements OnInit {
     console.log(this.device);
     //if(this.oldDevice.DesiredState.Threshold.temperature !== this.device.DesiredState.Threshold.temperature) {
       console.log('temperature has changes');
-      console.log('this.device.DesiredState.Threshold.temperature.value');
       this.api.setDesiredState(this.device.deviceId,'temperature',this.device.DesiredState.Threshold.temperature.value, this.device.DesiredState.Threshold.temperature.unit)
         .subscribe(data => {
           console.log(data);
@@ -74,20 +78,24 @@ export class DeviceViewComponent implements OnInit {
         })
     //}
     this.editMode = false;
+    this.isUpdated = false;
+    this.isUpdatedCheck();
   }
   connect(): void {
-    let source = new EventSource('http://localhost:3000/stream');
+    let source = new EventSource('http://localhost:3000/api/telemetry/stream');
     source.addEventListener('message', event => {
       let msg = event['data'];
       console.log(msg); 
       let json = JSON.parse(msg);
       console.log(json);
+      console.log(json.DeviceId == this.deviceId)
         if(json.DeviceId == this.deviceId) {
           this.device.ReportedState = json.ReportedState;
-          if(this.device == json.msg)
+          if(JSON.stringify(this.device) == JSON.stringify(json.msg))
           {
             this.isUpdated = true;
           }
+          this.isUpdatedCheck();
         }
       });
   }

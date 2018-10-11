@@ -19,6 +19,14 @@ def on_message(client, obj, msg):
         config.setThresholdValue(tmp["type"], tmp["value"])
     elif msg.topic == 'device/myDevice':
         config.setThresholdValue(tmp["type"],tmp["threshold"])
+        report = config.getSavedState()
+        print(report)
+        reportedState = {
+        "DeviceId": deviceId,
+        "ReportedState": report['ReportedState']
+        }
+        mqttc.publish("report", json.dumps(reportedState))
+        print('publish changes')
     else:
         print('No subscription handler')
 
@@ -86,7 +94,7 @@ testMessage = {
         "Unit": "Celsius"
     }
 }
-mqttc.publish("telemetry", json.dumps(testMessage))
+#mqttc.publish("telemetry", json.dumps(testMessage))
 
 # Continue the network loop, exit when an error occurs
 rc = 0
