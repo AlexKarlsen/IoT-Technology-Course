@@ -10,11 +10,11 @@ var options = {
   username: process.env.USERNAME,
   password: process.env.PASSWORD
 }
-var topic = process.env.CLOUDMQTT_TOPIC || 'test';
+var topic = ['telemetry'];
 var client = mqtt.connect(mqtt_url, options);
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/test', function(req, res, next) {
   var config =  url.parse(mqtt_url);
   config.topic = topic;
   res.render('index', {
@@ -53,8 +53,8 @@ client.on('connect', function() {
     client.subscribe(topic, function() {
       client.on('message', function(topic, msg, pkt) {
 		//res.write("New message\n");
-		var json = JSON.parse(msg);
-        res.write("data: " + json.date + ": " + json.msg + "\n\n");
+    var json = JSON.parse(msg);
+        res.write("data: " + JSON.stringify(json) + '\n\n');
       });
     });
   });

@@ -8,9 +8,10 @@
   "dependencies": {
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
+    "cors": "^2.8.4",
     "debug": "~2.6.9",
     "dotenv": "^6.0.0",
-    "express": "~4.15.5",
+    "express": "^4.16.3",
     "mongodb": "^2.2.36",
     "morgan": "~1.9.0",
     "mqtt": "^2.18.8",

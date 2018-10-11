@@ -3,10 +3,16 @@ var router = express.Router();
 var serviceController = require('../controllers/serviceController')
 var baseurl = "/service";
 
-router.route(baseurl + '/:id')
+router.route(baseurl + '/device')
+    .get(serviceController.getDevices);
+
+router.route(baseurl + '/device/:id')
     .get(serviceController.getDeviceSetting);
 
-router.route(baseurl + '/:id' + '/DesiredState/thresholds' + '/:type')
+router.route(baseurl + '/device/:id' + '/DesiredState/thresholds' + '/:type')
     .put(serviceController.updateDeviceSetting);
+
+router.route(baseurl + '/stream')
+    .get(serviceController.deviceStream); 
     
 module.exports = router;

@@ -1,0 +1,8 @@
+<div class="container">
+  <h1>Environment Monitoring</h1>
+  <div *ngIf="chartData">
+    <canvas baseChart [chartType]="'line'" [datasets]="chartData" [labels]="chartLabels" [options]="chartOptions"
+      [legend]="true" (chartClick)="onChartClick($event)">
+    </canvas>
+  </div>
+</div>

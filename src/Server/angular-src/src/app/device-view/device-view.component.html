@@ -1,0 +1,53 @@
+<div class="container" *ngIf="device">
+    
+<h2>{{device.deviceId}}</h2>
+<p *ngIf="isUpdated;else other_content">Device is up to date</p>
+<ng-template #other_content>Device is not updated</ng-template>
+<form #deviceTwinForm="ngForm">
+<table  class="table">
+  <thead>
+        <th colspan="2">Thresholds</th>
+        <th> <button class="btn btn-default" (click)="toggleEdit()">Edit</button></th>
+  </thead>
+  <tr>
+      <th>Measure</th>
+      <th>Value</th>
+      <th>Unit</th>
+  </tr>
+  <tr>
+    <td>
+      Temperature
+    </td>
+    <td>
+      <input class="form-control" type='number' [(ngModel)]="device.DesiredState.Threshold.temperature.value" name="temperature" [disabled]="!editMode"/>
+    </td>
+    <td>
+        <input class="form-control" type='text' [(ngModel)]="device.DesiredState.Threshold.temperature.unit" name="temperatureUnit" [disabled]="!editMode"/>
+    </td>
+  </tr>
+  <tr>
+      <td>
+        Pressure
+      </td>
+      <td>
+          <input class="form-control" type='number' [(ngModel)]="device.DesiredState.Threshold.pressure.value" name="pressure" [disabled]="!editMode"/>
+      </td>
+      <td>
+          <input class="form-control" type='text' [(ngModel)]="device.DesiredState.Threshold.pressure.unit" name="pressureUnit" [disabled]="!editMode"/>
+      </td>
+    </tr>
+    <tr>
+        <td>
+          Humidity
+        </td>
+        <td>
+            <input class="form-control" type='number' [(ngModel)]="device.DesiredState.Threshold.humidity.value" name="humidity" [disabled]="!editMode"/>
+        </td>
+        <td>
+            <input class="form-control" type='text' [(ngModel)]="device.DesiredState.Threshold.humidity.unit" name="humidityUnit" [disabled]="!editMode"/>
+        </td>
+      </tr>
+</table>
+<button class="btn btn-default" (click)="onSubmit()" [disabled]="deviceTwinForm.pristine">Save</button>
+</form>
+</div>

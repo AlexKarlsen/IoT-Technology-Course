@@ -1,7 +1,7 @@
 const mqtt = require('mqtt');
 const fs = require('fs');
 require('dotenv').config();
-telemetryController = require('./api/controllers/telemetryController');
+//telemetryController = require('./api/controllers/telemetryController');
 
 var MongoClient = require('mongodb').MongoClient,
   assert = require('assert');
@@ -27,6 +27,7 @@ var mqttSingleton = (function () {
 })();
 
 class MqttHandler {
+  
   constructor() {
     this.mqttClient = null;
     this.host = process.env.CLOUDMQTT_URL;
@@ -37,6 +38,7 @@ class MqttHandler {
     };
     this.connect();
   }
+  
 
   connect() {
     console.log("connect");
