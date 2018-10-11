@@ -50,4 +50,36 @@
 </table>
 <button class="btn btn-default" (click)="onSubmit()" [disabled]="deviceTwinForm.pristine">Save</button>
 </form>
+<table  class="table">
+    <thead>
+          <th colspan="2">Alerts</th>
+    </thead>
+    <tr>
+        <th>Measure</th>
+    </tr>
+    <tr>
+      <td>
+        Temperature
+      </td>
+      <td>
+        <button class="btn btn-warning" style="color:red" *ngIf="device.Alarms.Temperature">Alert</button>
+      </td>
+    </tr>
+    <tr>
+        <td>
+          Pressure
+        </td>
+        <td>
+            <button class="btn btn-warning" style="color:red" *ngIf="device.Alarms.Pressure">Alert</button>
+        </td>
+      </tr>
+      <tr>
+          <td>
+            Humidity
+          </td>
+          <td>
+            <button class="btn btn-warning" style="color:red" *ngIf="device.Alarms.Humidity">Alert</button>
+          </td>
+        </tr>
+  </table>
 </div>

@@ -96,6 +96,20 @@ testMessage = {
 }
 #mqttc.publish("telemetry", json.dumps(testMessage))
 
+# Alarms
+def onAlarmChange(field, isAlarm):
+    config.setAlarm(field, isAlarm)
+    alarmMsg = {
+        "msgType": "Alarm",
+        "DeviceId": deviceId,
+        "type": field,
+        "value": isAlarm
+    }
+    mqttc.publish('alarm', json.dumps(alarmMsg))
+
+onAlarmChange('Temperature', True)
+
+
 # Continue the network loop, exit when an error occurs
 rc = 0
 while rc == 0:

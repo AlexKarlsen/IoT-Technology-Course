@@ -17,8 +17,8 @@ var mqttSingleton = (function () {
   }
 
   return {
-    getInstance: function() {
-      if(!instance) {
+    getInstance: function () {
+      if (!instance) {
         instance = createInstance()
       }
       return instance;
@@ -27,7 +27,7 @@ var mqttSingleton = (function () {
 })();
 
 class MqttHandler {
-  
+
   constructor() {
     this.mqttClient = null;
     this.host = process.env.CLOUDMQTT_URL;
@@ -38,12 +38,12 @@ class MqttHandler {
     };
     this.connect();
   }
-  
+
 
   connect() {
     console.log("connect");
     // Array of MQTT subscriptions
-    let subscriptions = ["telemetry", "report", "test", "device/myDevice"];
+    let subscriptions = ["telemetry", "report", "alarm", "device/myDevice"];
 
     // Connect mqtt with credentials
     this.mqttClient = mqtt.connect(this.host, this.options);
@@ -69,7 +69,7 @@ class MqttHandler {
         console.log(JSON.parse(message));
         storeMessage(message)
       }
-      else if (topic == subscriptions[1]){
+      else if (topic == subscriptions[1]) {
         var msg = JSON.parse(message);
         MongoClient.connect(url, function (err, db) {
           assert.equal(null, err);
@@ -80,18 +80,46 @@ class MqttHandler {
           //update = 'ReportedState.Threshold.';
           console.log(msg)
           collection.updateOne(
-              { deviceId: msg.DeviceId },
-              { $set: {
-                  "ReportedState": msg.ReportedState  
-                  }
-              },
-              function (err, result) {
-                  if (err) throw err;
-                  console.log("Reported")
-                  db.close();
+            { deviceId: msg.DeviceId },
+            {
+              $set: {
+                "ReportedState": msg.ReportedState
               }
+            },
+            function (err, result) {
+              if (err) throw err;
+              console.log("Reported")
+              db.close();
+            }
           );
-      });
+        });
+      }
+      else if (topic == subscriptions[2]) {
+        var msg = JSON.parse(message);
+        MongoClient.connect(url, function (err, db) {
+          assert.equal(null, err);
+          console.log("Alarm...");
+          // Get the documents collection
+          var collection = db.collection('deviceTwins');
+          // update
+          //update = 'ReportedState.Threshold.';
+          console.log(msg)
+          var update = "Alarms." + msg.type;
+          console.log(update); 
+          collection.updateOne(
+            { deviceId: msg.DeviceId },
+            {
+              $set: {
+                [update]: msg.value
+              }
+            },
+            function (err, result) {
+              if (err) throw err;
+              console.log("Alarmed")
+              db.close();
+            }
+          );
+        });
       }
     });
 
@@ -113,7 +141,7 @@ class MqttHandler {
     })
   }
 }
-function storeMessage(message){
+function storeMessage(message) {
   // Use connect method to connect to the server
   MongoClient.connect(url, function (err, db) {
     assert.equal(null, err);
@@ -122,18 +150,18 @@ function storeMessage(message){
     var collection = db.collection('telemetry');
     // Insert some documents
     var msg = JSON.parse(message);
-    collection.updateOne({ 
+    collection.updateOne({
       DeviceId: msg.DeviceId
-      },
+    },
       {
         $push: { TelemetryData: msg.TelemetryData }
       },
       {
         upsert: true
-      },function (err, result) {
-      if (err) throw err;
-      db.close();
-    });
+      }, function (err, result) {
+        if (err) throw err;
+        db.close();
+      });
   });
 }
 module.exports = mqttSingleton;

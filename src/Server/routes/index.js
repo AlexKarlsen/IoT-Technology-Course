@@ -73,7 +73,7 @@ client.on('connect', function () {
     var timer = setInterval(function () {
       res.write('event: ping' + '\n\n');
     }, 20000);
-    var topic = ["telemetry","report"];
+    var topic = ["telemetry","report","alarm"];
     client.subscribe(topic, function () {
       client.on('message', function (topic, msg, pkt) {
         //res.write("New message\n");
