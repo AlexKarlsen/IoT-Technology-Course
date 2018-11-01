@@ -1,0 +1,16 @@
+<div class="container">
+  <h2>Devices</h2>
+  <ul class="list-group">
+    <li class="list-group-item " *ngFor="let device of devices">
+      <div class="btn-toolbar justify-content-between">
+        <h3>{{device.deviceId}}</h3>
+        <img height="30px" src="../../assets/icons/warning.svg" *ngIf="device.Alarms.Temperature||device.Alarms.Humidity||device.Alarms.Pressure">
+        <div class="btn-group">
+          <button [class.selected]="device === selectedDevice" (click)="onSelect(device)" type="button" class="btn btn-default">Show
+            Device</button>
+          <button type="button" class="btn btn-default">Settings</button>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>

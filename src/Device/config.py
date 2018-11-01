@@ -30,3 +30,9 @@ def setReportedState(field):
     config["ReportedState"] = field
     with open("config.json", "w+") as jsonFile:
         json.dump(config, jsonFile)
+
+def setAlarm(field, value):
+    global config
+    config["Alarms"][field] = value
+    with open("config.json", "w+") as jsonFile:
+        json.dump(config, jsonFile)
