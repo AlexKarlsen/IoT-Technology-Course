@@ -107,7 +107,7 @@ def onAlarmChange(field, isAlarm):
     }
     mqttc.publish('alarm', json.dumps(alarmMsg))
 
-onAlarmChange('Temperature', True)
+onAlarmChange('Temperature', False)
 
 
 # Continue the network loop, exit when an error occurs

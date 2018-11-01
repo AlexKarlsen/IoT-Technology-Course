@@ -1,0 +1,35 @@
+@startuml
+skinparam handwritten true
+skinparam monochrome true
+
+node mqtt as "MQTT Broker"
+node device as "Device"
+node server as "REST API"
+node app as "App"
+database db as "Device Twin" {
+    frame twin as "Device Twin"
+    frame telemetry as "Telemetry Data"
+}
+interface Publish
+interface Subscribe
+interface Telemetry
+interface Device
+interface Service
+
+
+mqtt -- Publish
+mqtt -- Subscribe
+server --( Publish 
+server --( Subscribe
+server --() Device
+server --() Service
+server --() Telemetry
+twin -- server
+telemetry -- server
+Service )-- app
+Telemetry )-- app
+Publish )-- device 
+Subscribe )-- device
+Device )-- device
+
+@enduml
