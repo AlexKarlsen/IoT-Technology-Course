@@ -1,14 +1,14 @@
 import time, threading
 from sense_hat import SenseHat
 
-class Sensor:
+class Sense:
     def __init__(self):
-        print("Object created!") # Test
-        self.s = SenseHat()
+        print("Sense created!") # Test
+        self.sense = SenseHat()
         self.running = True
 
     def singleReading():
-        return [self.s.temp, self.s.humidity, self.s.pressure]
+        return [self.sense.temp, self.sense.humidity, self.sense.pressure]
 
     def readPeriodically(periode, handler):
         if self.running:
@@ -31,7 +31,7 @@ class Sensor:
         O, O, O, X, X, O, O, O,
         O, O, O, O, O, O, O, O
         ]
-        self.s.set_pixels(mark)
+        self.sense.set_pixels(mark)
 
     def setOutofbounds():
         X = [255, 0, 0] 
@@ -46,7 +46,7 @@ class Sensor:
         O, X, O, O, O, O, X, O,
         O, O, O, O, O, O, O, O
         ]
-        self.s.set_pixels(mark)
+        self.sense.set_pixels(mark)
 
 # Test handler:
     def printReadings(r):
@@ -57,5 +57,6 @@ class Sensor:
         print("----------------------------------------")
 
     
-# Testing
-s1 = Sensor()
+### Testing
+#s1 = Sensor()
+#s1.readPeriodically(5, printReadings)
