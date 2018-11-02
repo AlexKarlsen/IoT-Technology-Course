@@ -28,10 +28,12 @@ export class HomeComponent implements OnInit {
         else if(json.TelemetryData.Type == 'Humidity'){
           this.humidity.data.push({t: new Date(json.TelemetryData.Timestamp), y : json.TelemetryData.Value})
         }
+        else if(json.TelemetryData.Type == 'Pressure'){
+          this.pressure.data.push({t: new Date(json.TelemetryData.Timestamp), y : json.TelemetryData.Value})
+        }
         console.log(this.temperature) 
         this.chartData = this.chartData.slice();
       });
-
   }
 
   getData() {
@@ -42,21 +44,25 @@ export class HomeComponent implements OnInit {
         data.forEach(i => {
           i.TelemetryData.forEach(j => {
             if(j.Type == 'Temperature')
-              this.temperature.data.push({t: new Date(j.Timestamp), y : j.Value})
+              this.temperature.data.push({t: new Date(j.Timestamp), y : j.Value});
             else if(j.Type == 'Humidity')
-              this.humidity.data.push({t: new Date(j.Timestamp), y : j.Value})
+              this.humidity.data.push({t: new Date(j.Timestamp), y : j.Value});
+            else if(j.Type == 'Pressure')
+              this.pressure.data.push({t: new Date(j.Timestamp), y: j.Value});
           });
 
         });
-        this.chartData.push(this.temperature)
-        this.chartData.push(this.humidity)
-        console.log(this.chartData)
+        this.chartData.push(this.temperature);
+        this.chartData.push(this.humidity);
+        this.chartData.push(this.pressure);
+        console.log(this.chartData);
         
       });
   }
 
   temperature = {data: [], label: 'Temperature'};
   humidity = {data: [], label: 'Humidity'};
+  pressure = {data: [], label: 'Pressure'};
 
   chartOptions = {
     responsive: true,
@@ -64,7 +70,7 @@ export class HomeComponent implements OnInit {
       xAxes: [{
           type: 'time',
           time: {
-              unit: 'second'
+              unit: 'minute'
             }
       }]
     }

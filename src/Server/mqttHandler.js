@@ -105,7 +105,7 @@ class MqttHandler {
           //update = 'ReportedState.Threshold.';
           console.log(msg)
           var update = "Alarms." + msg.type;
-          console.log(update); 
+          console.log(update);
           collection.updateOne(
             { deviceId: msg.DeviceId },
             {
@@ -150,18 +150,23 @@ function storeMessage(message) {
     var collection = db.collection('telemetry');
     // Insert some documents
     var msg = JSON.parse(message);
-    collection.updateOne({
-      DeviceId: msg.DeviceId
-    },
-      {
-        $push: { TelemetryData: msg.TelemetryData }
+
+    // Foreach telemetry data field append it to the document
+    msg.TelemetryData.forEach(i => {
+      collection.updateOne({
+        DeviceId: msg.DeviceId
       },
-      {
-        upsert: true
-      }, function (err, result) {
-        if (err) throw err;
-        db.close();
-      });
+        {
+          $push: { TelemetryData: i }
+        },
+        {
+          upsert: true
+        }, function (err, result) {
+          if (err) throw err;
+          db.close();
+        });
+    });
+
   });
 }
 module.exports = mqttSingleton;

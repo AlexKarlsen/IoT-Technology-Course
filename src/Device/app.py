@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-import os 
+import os
 from dotenv import load_dotenv
 import json
 import config
@@ -8,8 +8,11 @@ import requests
 import datetime
 
 # Define event callbacks
+
+
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT Broker")
+
 
 def on_message(client, obj, msg):
     tmp = json.loads(msg.payload.decode('utf8'))
@@ -18,7 +21,7 @@ def on_message(client, obj, msg):
         print(msg.topic)
         config.setThresholdValue(tmp["type"], tmp["value"])
     elif msg.topic == 'device/myDevice':
-        config.setThresholdValue(tmp["type"],tmp["threshold"])
+        config.setThresholdValue(tmp["type"], tmp["threshold"])
         report = config.getSavedState()
         print(report)
         reportedState = {
@@ -30,14 +33,18 @@ def on_message(client, obj, msg):
     else:
         print('No subscription handler')
 
+
 def on_publish(client, obj, mid):
     print("mid: " + str(mid))
+
 
 def on_subscribe(client, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
 
+
 def on_log(client, obj, level, string):
     print(string)
+
 
 deviceId = "myDevice"
 deviceSubscription = "device/" + deviceId
@@ -51,7 +58,7 @@ mqttc.on_subscribe = on_subscribe
 
 
 # Uncomment to enable debug messages
-#mqttc.on_log = on_log
+# mqttc.on_log = on_log
 
 # Getting environment variables
 load_dotenv()
@@ -87,14 +94,22 @@ mqttc.subscribe(deviceSubscription)
 # Publish a message
 testMessage = {
     "DeviceId": deviceId,
-    "TelemetryData": {
-        "Timestamp": str(datetime.datetime.now()),
-        "Type": "Temperature",
-        "Value": 23,
-        "Unit": "Celsius"
-    }
+    "TelemetryData": [
+        {
+            "Timestamp": str(datetime.datetime.now()),
+            "Type": "Temperature",
+            "Value": 23,
+            "Unit": "Celsius"
+        },
+        {
+            "Timestamp": str(datetime.datetime.now()),
+            "Type": "Humidity",
+            "Value": 23,
+            "Unit": "Celsius"
+        }
+    ]
 }
-#mqttc.publish("telemetry", json.dumps(testMessage))
+mqttc.publish("telemetry", json.dumps(testMessage))
 
 # Alarms
 def onAlarmChange(field, isAlarm):
@@ -107,7 +122,7 @@ def onAlarmChange(field, isAlarm):
     }
     mqttc.publish('alarm', json.dumps(alarmMsg))
 
-onAlarmChange('Temperature', False)
+onAlarmChange('Temperature', True)
 
 
 # Continue the network loop, exit when an error occurs

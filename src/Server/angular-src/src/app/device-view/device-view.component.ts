@@ -84,21 +84,16 @@ export class DeviceViewComponent implements OnInit {
   connect(): void {
     let source = new EventSource('http://localhost:3000/api/telemetry/stream');
     source.addEventListener('message', event => {
-      let msg = event['data'];
+      var msg = event['data'];
       let json = JSON.parse(msg);
       console.log(json);
+      console.log(this.deviceId);
       console.log(json.DeviceId == this.deviceId)
         if(json.DeviceId == this.deviceId) {
           if(json.msgType == "Alarm"){
             let type = json.type;
             this.device.Alarms[type] = json.value;
             console.log(this.device.Alarms[type]);
-            return;
-          }
-          this.device.ReportedState = json.ReportedState;
-          if(JSON.stringify(this.device) == JSON.stringify(json.msg))
-          {
-            this.isUpdated = true;
           }
           this.isUpdatedCheck();
         }
