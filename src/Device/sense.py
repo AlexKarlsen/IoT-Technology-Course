@@ -12,7 +12,7 @@ def readPeriodically(periode, handler):
 
 def setInbounds():
     X = [0, 255, 0] 
-    O = [255, 255, 255] 
+    O = [0, 0, 0] 
     mark = [
     O, O, O, O, O, O, O, O,
     O, X, X, O, O, X, X, O,
@@ -27,7 +27,7 @@ def setInbounds():
 
 def setOutofbounds():
     X = [255, 0, 0] 
-    O = [255, 255, 255] 
+    O = [0, 0, 0] 
     mark = [
     O, O, O, O, O, O, O, O,
     O, X, X, O, O, X, X, O,
@@ -50,4 +50,4 @@ def printReadings(r):
 
     
 ### Testing
-#readPeriodically(5, printReadings)
+# readPeriodically(5, printReadings)

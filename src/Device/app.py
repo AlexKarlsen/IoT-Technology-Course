@@ -6,6 +6,7 @@ import config
 import constants
 import requests
 import datetime
+import sense
 
 # Define event callbacks
 
@@ -71,10 +72,12 @@ port = int(os.getenv("PORT"))
 mqttc.username_pw_set(username, password)
 mqttc.connect(host, port)
 
+# Getting device state from server
 deviceConfig = config.getSavedState()
-print(config)
-resp = requests.get('http://localhost:3000/api/device/myDevice')
+resp = requests.get('http://169.254.202.126:3000/api/device/myDevice')
 respObj = resp.json()
+
+# Checking if state on device not matches server state
 if deviceConfig["DesiredState"] != respObj["DesiredState"]:
     print('state must be updated')
     config.setDesiredState(respObj["DesiredState"])
@@ -91,39 +94,55 @@ else:
 mqttc.subscribe("threshold")
 mqttc.subscribe(deviceSubscription)
 
-# Publish a message
-testMessage = {
-    "DeviceId": deviceId,
-    "TelemetryData": [
-        {
-            "Timestamp": str(datetime.datetime.now()),
-            "Type": "Temperature",
-            "Value": 23,
-            "Unit": "Celsius"
-        },
-        {
-            "Timestamp": str(datetime.datetime.now()),
-            "Type": "Humidity",
-            "Value": 23,
-            "Unit": "Celsius"
-        }
-    ]
-}
-mqttc.publish("telemetry", json.dumps(testMessage))
-
 # Alarms
 def onAlarmChange(field, isAlarm):
-    config.setAlarm(field, isAlarm)
-    alarmMsg = {
-        "msgType": "Alarm",
+    if (deviceConfig["Alarms"][field] != isAlarm):
+        config.setAlarm(field, isAlarm)
+        alarmMsg = {
+            "msgType": "Alarm",
+            "DeviceId": deviceId,
+            "type": field,
+            "value": isAlarm
+        }
+        mqttc.publish('alarm', json.dumps(alarmMsg))
+
+# Publish a message
+def handleReading(readings):
+    if (readings[0] > deviceConfig["DesiredState"]["Threshold"]["temperature"]["value"]):
+        sense.setOutofbounds()
+        onAlarmChange("Temperature", True)
+    else:
+        sense.setInbounds()
+        onAlarmChange("Temperature", False)
+
+    message = {
         "DeviceId": deviceId,
-        "type": field,
-        "value": isAlarm
+        "TelemetryData": [
+            {
+            "Timestamp": str(datetime.datetime.now()),
+            "Type": "Temperature",
+            "Value": readings[0],
+            "Unit": "Celsius"
+            },
+            {
+            "Timestamp": str(datetime.datetime.now()),
+            "Type": "Humidity",
+            "Value": readings[1],
+            "Unit": "Percent"
+            },
+            {
+                "Timestamp": str(datetime.datetime.now()),
+            "Type": "Pressure",
+            "Value": readings[2],
+            "Unit": "hPa"
+            }
+        ]
     }
-    mqttc.publish('alarm', json.dumps(alarmMsg))
+    mqttc.publish("telemetry", json.dumps(message))
 
-onAlarmChange('Temperature', True)
 
+# Start reading from sensehat
+sense.readPeriodically(5, handleReading)
 
 # Continue the network loop, exit when an error occurs
 rc = 0
