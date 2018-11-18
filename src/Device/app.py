@@ -8,9 +8,16 @@ import requests
 import datetime
 import sense
 
+# Local test variables
+# apiEndpoint = 'http://localhost:3000/api/device/myDevice'
+
+# PI variables
+apiEndpoint = 'http://169.254.202.126:3000/api/device/myDevice';
+
+deviceId = "myDevice"
+deviceSubscription = "device/" + deviceId
+
 # Define event callbacks
-
-
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT Broker")
 
@@ -21,13 +28,14 @@ def on_message(client, obj, msg):
     if msg.topic == constants.topics["Threshold"]:
         print(msg.topic)
         config.setThresholdValue(tmp["type"], tmp["value"])
-    elif msg.topic == 'device/myDevice':
+    elif msg.topic == deviceSubscription:
         config.setThresholdValue(tmp["type"], tmp["threshold"])
         report = config.getSavedState()
         print(report)
         reportedState = {
-        "DeviceId": deviceId,
-        "ReportedState": report['ReportedState']
+            "msgType": "Report",
+            "DeviceId": deviceId,
+            "ReportedState": report['ReportedState']
         }
         mqttc.publish("report", json.dumps(reportedState))
         print('publish changes')
@@ -45,10 +53,6 @@ def on_subscribe(client, obj, mid, granted_qos):
 
 def on_log(client, obj, level, string):
     print(string)
-
-
-deviceId = "myDevice"
-deviceSubscription = "device/" + deviceId
 
 mqttc = mqtt.Client()
 # Assign event callbacks
@@ -74,7 +78,7 @@ mqttc.connect(host, port)
 
 # Getting device state from server
 deviceConfig = config.getSavedState()
-resp = requests.get('http://169.254.202.126:3000/api/device/myDevice')
+resp = requests.get(apiEndpoint)
 respObj = resp.json()
 
 # Checking if state on device not matches server state
@@ -141,8 +145,37 @@ def handleReading(readings):
     mqttc.publish("telemetry", json.dumps(message))
 
 
-# Start reading from sensehat
+Start reading from sensehat
 sense.readPeriodically(5, handleReading)
+
+
+## Local test code
+# message = {
+#         "DeviceId": deviceId,
+#         "TelemetryData": [
+#             {
+#             "Timestamp": str(datetime.datetime.now()),
+#             "Type": "Temperature",
+#             "Value": 23,
+#             "Unit": "Celsius"
+#             },
+#             {
+#             "Timestamp": str(datetime.datetime.now()),
+#             "Type": "Humidity",
+#             "Value": 76,
+#             "Unit": "Percent"
+#             },
+#             {
+#                 "Timestamp": str(datetime.datetime.now()),
+#             "Type": "Pressure",
+#             "Value": 1022,
+#             "Unit": "hPa"
+#             }
+#         ]
+#     }
+# mqttc.publish("telemetry", json.dumps(message))
+
+# onAlarmChange("Temperature", True)
 
 # Continue the network loop, exit when an error occurs
 rc = 0

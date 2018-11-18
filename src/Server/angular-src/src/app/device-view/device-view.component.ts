@@ -19,9 +19,8 @@ export class DeviceViewComponent implements OnInit {
     this.getDeviceTwin();
     this.connect();
   }
-  oldDevice;
   editMode = false;
-  private device: any;
+  device: any;
   deviceId;
 
   isUpdated: boolean;
@@ -38,7 +37,6 @@ export class DeviceViewComponent implements OnInit {
           .subscribe(data => {
             console.log(data);
             this.device = data;
-            this.oldDevice = data;
             this.isUpdatedCheck()
           });
         });
@@ -66,37 +64,47 @@ export class DeviceViewComponent implements OnInit {
   }
 
   onSubmit() {
-    console.log('submit');
-    console.log(this.oldDevice);
-    console.log(this.device);
-    //if(this.oldDevice.DesiredState.Threshold.temperature !== this.device.DesiredState.Threshold.temperature) {
-      console.log('temperature has changes');
-      this.api.setDesiredState(this.device.deviceId,'temperature',this.device.DesiredState.Threshold.temperature.value, this.device.DesiredState.Threshold.temperature.unit)
+      console.log('device has changes');
+      this.editMode = false;
+      this.isUpdated = false;
+
+      this.api.setDesiredState(this.device.deviceId,'Temperature',this.device.DesiredState.Threshold.Temperature.value, this.device.DesiredState.Threshold.Temperature.unit)
         .subscribe(data => {
           console.log(data);
+          this.isUpdatedCheck();
+        });
+        this.api.setDesiredState(this.device.deviceId,'Humidity',this.device.DesiredState.Threshold.Humidity.value, this.device.DesiredState.Threshold.Humidity.unit)
+        .subscribe(data => {
+          console.log(data);
+          this.isUpdatedCheck();
+        });
+        this.api.setDesiredState(this.device.deviceId,'Pressure',this.device.DesiredState.Threshold.Pressure.value, this.device.DesiredState.Threshold.Pressure.unit)
+        .subscribe(data => {
+          console.log(data);
+          this.isUpdatedCheck();
+        });
 
-        })
-    //}
-    this.editMode = false;
-    this.isUpdated = false;
-    this.isUpdatedCheck();
+    
   }
+
   connect(): void {
-    let source = new EventSource('http://localhost:3000/api/telemetry/stream');
+    let source = new EventSource('http://localhost:3000/api/service/device/stream');
     source.addEventListener('message', event => {
+
       var msg = event['data'];
       let json = JSON.parse(msg);
       console.log(json);
-      console.log(this.deviceId);
-      console.log(json.DeviceId == this.deviceId)
-        if(json.DeviceId == this.deviceId) {
-          if(json.msgType == "Alarm"){
+
+        if(json.DeviceId == this.deviceId && json.msgType == "Alarm") {
             let type = json.type;
             this.device.Alarms[type] = json.value;
             console.log(this.device.Alarms[type]);
-          }
-          this.isUpdatedCheck();
+            this.isUpdatedCheck();
         }
+        if(json.DeviceId == this.deviceId && json.msgType == "Report") {
+          this.device.ReportedState = json.ReportedState
+          this.isUpdatedCheck();
+      }
       });
   }
 }

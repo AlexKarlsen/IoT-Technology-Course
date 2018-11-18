@@ -35,7 +35,8 @@ client.on('connect', function () {
     });
   });
 
-  router.get('/api/service/device/stream'), function (req, res) {
+  router.get('/api/service/device/stream', function (req, res) {
+    console.log('Live connection to device data');
     // send headers for event-stream connection
     // see spec for more information
     res.writeHead(200, {
@@ -49,7 +50,7 @@ client.on('connect', function () {
     var timer = setInterval(function () {
       res.write('event: ping' + '\n\n');
     }, 20000);
-
+    var topic = ["alarm", "report"];
     client.subscribe(topic, function () {
       client.on('message', function (topic, msg, pkt) {
         //res.write("New message\n");
@@ -57,7 +58,32 @@ client.on('connect', function () {
         res.write("data: " + JSON.stringify(json) + '\n\n');
       });
     });
-  };
+  });
+
+  // router.get('/api/service/device/stream'), function (req, res) {
+  //   // send headers for event-stream connection
+  //   // see spec for more information
+  //   res.writeHead(200, {
+  //     'Content-Type': 'text/event-stream',
+  //     'Cache-Control': 'no-cache',
+  //     'Connection': 'keep-alive'
+  //   });
+  //   res.write('\n');
+
+  //   // Timeout timer, send a comment line every 20 sec
+  //   var timer = setInterval(function () {
+  //     res.write('event: ping' + '\n\n');
+  //   }, 20000);
+
+  //   var topic = ["alarm"];
+  //   client.subscribe(topic, function () {
+  //     client.on('message', function (topic, msg, pkt) {
+  //       //res.write("New message\n");
+  //       var json = JSON.parse(msg);
+  //       res.write("data: " + JSON.stringify(json) + '\n\n');
+  //     });
+  //   });
+  // };
 
   router.get('/api/telemetry/stream', function (req, res) {
     // send headers for event-stream connection
@@ -73,7 +99,7 @@ client.on('connect', function () {
     var timer = setInterval(function () {
       res.write('event: ping' + '\n\n');
     }, 20000);
-    var topic = ["telemetry","report","alarm"];
+    var topic = ["telemetry"];
     client.subscribe(topic, function () {
       client.on('message', function (topic, msg, pkt) {
         //res.write("New message\n");
