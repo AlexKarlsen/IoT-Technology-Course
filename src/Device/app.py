@@ -8,12 +8,16 @@ import requests
 import datetime
 import sense
 
+sense.setInbounds()
+
 # Local test variables
 # apiEndpoint = 'http://localhost:3000/api/device/myDevice'
 
 # PI variables
-apiEndpoint = 'http://169.254.202.126:3000/api/device/myDevice';
+apiEndpoint = 'https://iottech18.herokuapp.com/api/device/myDevice'
 
+
+deviceConfig = config.getSavedState()
 deviceId = "myDevice"
 deviceSubscription = "device/" + deviceId
 
@@ -28,8 +32,12 @@ def on_message(client, obj, msg):
     if msg.topic == constants.topics["Threshold"]:
         print(msg.topic)
         config.setThresholdValue(tmp["type"], tmp["value"])
+        deviceConfig = config.getSavedState()
+        print(deviceConfig)
     elif msg.topic == deviceSubscription:
         config.setThresholdValue(tmp["type"], tmp["threshold"])
+        config.setThresholdValue(tmp["type"], tmp["value"])
+        deviceConfig = config.getSavedState()
         report = config.getSavedState()
         print(report)
         reportedState = {
@@ -86,6 +94,7 @@ if deviceConfig["DesiredState"] != respObj["DesiredState"]:
     print('state must be updated')
     config.setDesiredState(respObj["DesiredState"])
     config.setReportedState(respObj["DesiredState"])
+    config.setAlarmState(respObj["Alarms"])
     reportedState = {
         "DeviceId": deviceId,
         "ReportedState": respObj["DesiredState"]
@@ -100,22 +109,25 @@ mqttc.subscribe(deviceSubscription)
 
 # Alarms
 def onAlarmChange(field, isAlarm):
-    if (deviceConfig["Alarms"][field] != isAlarm):
-        config.setAlarm(field, isAlarm)
-        alarmMsg = {
-            "msgType": "Alarm",
-            "DeviceId": deviceId,
-            "type": field,
-            "value": isAlarm
-        }
-        mqttc.publish('alarm', json.dumps(alarmMsg))
+    config.setAlarm(field, isAlarm)
+    alarmMsg = {
+        "msgType": "Alarm",
+        "DeviceId": deviceId,
+        "type": field,
+        "value": isAlarm
+    }
+    print('Alarming...{}'.format(isAlarm))
+    mqttc.publish('alarm', json.dumps(alarmMsg))
 
 # Publish a message
 def handleReading(readings):
-    if (readings[0] > deviceConfig["DesiredState"]["Threshold"]["temperature"]["value"]):
+    print(readings[0])
+    print(deviceConfig["DesiredState"]["Threshold"]["Temperature"]["value"])
+    if (readings[0] > deviceConfig["DesiredState"]["Threshold"]["Temperature"]["value"]):
         sense.setOutofbounds()
-        onAlarmChange("Temperature", True)
-    else:
+        onAlarmChange("Temperature", True) 
+    
+    if (readings[0] < deviceConfig["DesiredState"]["Threshold"]["Temperature"]["value"]):
         sense.setInbounds()
         onAlarmChange("Temperature", False)
 
@@ -145,7 +157,7 @@ def handleReading(readings):
     mqttc.publish("telemetry", json.dumps(message))
 
 
-Start reading from sensehat
+#Start reading from sensehat
 sense.readPeriodically(5, handleReading)
 
 

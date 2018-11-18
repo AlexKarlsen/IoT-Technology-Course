@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { ApiService } from '../api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -9,21 +10,31 @@ import { ApiService } from '../api.service';
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private api: ApiService){}
+  constructor(private api: ApiService, private router: Router){}
   ngOnInit(){
     this.getData();
     this.connect();
+    
   }
+
+  source;
 
   connect(): void {
     console.log("connecting to stream");
-    let source = new EventSource('http://localhost:3000/api/telemetry/stream');
-    source.addEventListener('message', event => {
+    this.source = new EventSource('http://localhost:3000/api/telemetry/stream');
+    this.source.addEventListener('message', event => {
+      if(!this.router.isActive) {
+        console.log('navigated')
+        this.source.removeEventListener();
+      }
       console.log('Event stream ready');
 
       // Handle telemetry data 
       let msg = event['data'];
       let json = JSON.parse(msg);
+      if (json.msgType == "Alarm" || json.msgType == "Report") {
+        return;
+      }
       console.log(json);
       json.TelemetryData.forEach(i => {
         if(i.Type == 'Temperature') {
@@ -36,7 +47,6 @@ export class HomeComponent implements OnInit {
           this.pressure.data.push({t: new Date(i.Timestamp), y : i.Value})
         }
       })
-        
         console.log(this.temperature) 
         this.chartData = this.chartData.slice();
       });

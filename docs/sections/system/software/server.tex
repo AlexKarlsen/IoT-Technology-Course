@@ -2,5 +2,41 @@
 ...
 
 API Table
+\begin{table}[H]
+    \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
+    Get & /Telemetry & All Sensor Telemetry  \\ \hline
+    Get & /Telemetry/:id & Sensor Telemetry by device \\ \hline
+    Stream & /Telemetry/stream & Live SSE Sensor Telemetry  \\ \hline
+    \end{tabular}
+    \caption{REST Endpoint Telemetry}
+    \label{}
+    \end{table}
+
+    \begin{table}[H]
+        \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
+        Get & /Service/Device & Get All Devices  \\ \hline
+        Get & /Service/Device:id & Get Device Setting \\ \hline
+        Put & /Service/Device/:id/Threshold/:type & Update Threshold Value for device by type  \\ \hline
+        Stream & /Service/Device/Stream & Live SSE Reports and Alerts \\ \hline
+        \end{tabular}
+        \caption{REST Endpoint Service}
+        \label{}
+    \end{table}
+
+    \begin{table}[H]
+        \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
+        Get & /Device/:id & Get Device's settings  \\ \hline
+        \end{tabular}
+        \caption{REST Endpoint Device}
+        \label{}
+    \end{table}
+
+
 MQTT
 Server-Sent-Event

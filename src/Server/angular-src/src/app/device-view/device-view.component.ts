@@ -44,9 +44,21 @@ export class DeviceViewComponent implements OnInit {
       
   }
 
+  compareThresholds(a, b) {
+    if( a.DesiredState.Threshold.Temperature.value === b.DesiredState.Threshold.Temperature.value
+      && a.DesiredState.Threshold.Humidity.value === b.DesiredState.Threshold.Humidity.value &&
+      a.DesiredState.Threshold.Pressure.value === b.DesiredState.Threshold.Pressure.value) {
+        return true;
+      } else return false;
+  }
+
   isUpdatedCheck() {
-    console.log(JSON.stringify(this.device.DesiredState) == JSON.stringify(this.device.ReportedState));
-    if(JSON.stringify(this.device.DesiredState) == JSON.stringify(this.device.ReportedState)){
+    console.log('Update check');
+    console.log(JSON.stringify(this.device.DesiredState));
+    console.log(JSON.stringify(this.device.ReportedState));
+
+    console.log(this.compareThresholds(this.device, this.device));
+    if(this.compareThresholds(this.device, this.device)){
       this.isUpdated = true;
       console.log('Device is updated');
     }
