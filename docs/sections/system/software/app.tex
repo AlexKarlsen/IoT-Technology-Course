@@ -1,22 +1,29 @@
 \subsection{App}
 
+The app presents all the sensor telemetry data live to the user, it manages device setting by updating threshold values and it monitor the device state and alerts. The app has three main views.
+Figure \ref{fig:chartview} draws a live chart of incoming sensor telemetry. 
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/App/app_dashboard}
-    \caption{}
-    \label{}
+    \caption{Telemetry Chart View}
+    \label{fig:chartview}
 \end{figure}
+
+Figure \ref{fig:devicelist} shows a list of all devices managed by the user. 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/App/app_device_list}
-    \caption{}
-    \label{}
+    \caption{List of devices managed}
+    \label{fig:devicelist}
 \end{figure}
+
+Figure \ref{fig:deviceoverview} shows the state of the device, the threshold it monitors and the alerts raised by the device monitored in real-time.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\textwidth]{figures/App/app_device_settings}
-    \caption{}
-    \label{}
+    \caption{Device state overview: Manage thresholds and monitors alerts}
+    \label{fig:deviceoverview}
 \end{figure}

@@ -1,9 +1,37 @@
 \subsection{Server}
-...
+The server is the entity that binds the solution together. It is implemented as a Node.js server written in javascript.  The server handles all communication with the IoT Device by an MQTT broker. It handles all communication with the client applications and enable real-time feature by implementing Server-Sent-Event (SSE). Lastly it handles all interaction with the database.   
+Almost all communication with the device is done trough the MQTT broker hosted at CloudMQTT. The topic-based Publish/Subscribe pattern makes it easy to establish bi-directional communication. To set it app the node module 'mqtt' must be installed. It allows us to create a MQTT Client and to subscribe all we must do is subscribe to the defined topics and implement the requires callback functions. To publish simply call the publish function and pass on the topic and message to send. Table \ref{tbl:topics} presents all the topics and a description.
 
-API Table
 \begin{table}[H]
+    \centering
+    \begin{tabular}{|l|p{10cm}|}
+    \hline
+    \textbf{MQTT Topics}    & \textbf{Description} \\ \hline
+    Telemetry & Devices publish sensor telemetry to this topic. The server subscribes, sends the telemetry REST Endpoint Stream* and stores the value in the database \\ \hline
+    Report & Devices publishes reports on update request to this topic. The server send the report to services Rest Endpoint Stream* and updates the device twin \\ \hline
+    Alarm & Devices publish alarm when thresholds are exceeded to this topic. The server sends the alarm to the service Rest Endpoint Stream* \\ \hline
+    device/:DeviceId & The server publish update request messages to this filtered device topic. The device updates its settings and report back to the server. \\ \hline
+    \end{tabular}
+    \caption{MQTT Topics.\\ * REST Enpoint are explained in table \ref{tbl:device}, \ref{tbl:telemetry} and \ref{tbl:service}}
+    \label{tbl:topics}
+\end{table}
+The server exposes an HTTP REST endpoint to the device to get the device's device twin, as seen in API table \ref{tbl:device}.
+
+\begin{table}[H]
+    \centering
     \begin{tabular}{|l|l|l|}
+    \hline
+    \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
+    Get & /Device/:id & Get Device's settings  \\ \hline
+    \end{tabular}
+    \caption{REST Endpoint Device}
+    \label{tbl:device}
+\end{table}
+The server also exposes HTTP REST Endpoint for applications to get telemetry data from devices as seen in table \ref{tbl:telemetry}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|p{5cm}|}
     \hline
     \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
     Get & /Telemetry & All Sensor Telemetry  \\ \hline
@@ -11,11 +39,13 @@ API Table
     Stream & /Telemetry/stream & Live SSE Sensor Telemetry  \\ \hline
     \end{tabular}
     \caption{REST Endpoint Telemetry}
-    \label{}
-    \end{table}
+    \label{tbl:telemetry}
+\end{table}
+The server exposes HTTP REST endpoint service to manage devices and subscribe to the reports and alerts stream as seen in table \ref{tbl:service}.
 
     \begin{table}[H]
-        \begin{tabular}{|l|l|l|}
+        \centering
+        \begin{tabular}{|l|l|p{5cm}|}
         \hline
         \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
         Get & /Service/Device & Get All Devices  \\ \hline
@@ -24,19 +54,29 @@ API Table
         Stream & /Service/Device/Stream & Live SSE Reports and Alerts \\ \hline
         \end{tabular}
         \caption{REST Endpoint Service}
-        \label{}
+        \label{tbl:service}
     \end{table}
 
-    \begin{table}[H]
-        \begin{tabular}{|l|l|l|}
-        \hline
-        \textbf{HTTP Method}    & \textbf{API Route} & \textbf{Response} \\ \hline
-        Get & /Device/:id & Get Device's settings  \\ \hline
-        \end{tabular}
-        \caption{REST Endpoint Device}
-        \label{}
-    \end{table}
+    File api/routes/serviceRoutes.js presented in listing \ref{lst:routes} show the routing structure of the REST API Service Endpoint. 
 
+\begin{lstlisting}[style=js, caption=Node.js REST API Routes, label={lst:routes}]
+    ...
+    var baseurl = "/service";
 
-MQTT
-Server-Sent-Event
+    /* REST API routes */
+    router.route(baseurl + '/device')
+        .get(serviceController.getDevices);
+
+    router.route(baseurl + '/device/:id')
+        .get(serviceController.getDeviceSetting);
+
+    router.route(baseurl + '/device/:id' + '/thresholds' + '/:type')
+        .put(serviceController.updateDeviceSetting);
+
+    router.route(baseurl + '/stream')
+        .get(serviceController.deviceStream); 
+    ...
+\end{lstlisting}
+
+The server implements SSE to enable real-time features. SSE is an altered HTTP Get Method, where the connection is kept alive. The server sends events event over this open connection to applications, that utilizes this channel and live updates the UI. 
+

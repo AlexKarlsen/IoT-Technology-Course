@@ -1,1 +1,13 @@
-\subsection{REST}
+\subsection{Representational State Transfer (REST)}
+Representational State Transfer or REST is an architectural model which enables web services. It rely on three concepts: 
+\begin{description}
+    \item[Representation] Data or resources are encoded as representations of the data or resource. The resource temperature can be represented as a decimal number.
+    \item[State] All state needed to provide the request must be included in the request. This provide stateless clients and servers. 
+    \item[Transfer] The representations can be transferred between servers and clients.
+\end{description} \cite{smartthings}
+
+REST uses the concept of Universal Resource Identifier (URI) to identify single objects. The object requested by REST are transferred in the JSON data format, which are a very compact data format well-suited for Smart Devices. REST implements basic HTTP operations (Get, Post, Put and Delete), that browsers also support. Almost any framework today comes with an HTTP API and it makes it easy to consume REST services. When new technologies emerge they can easily integrate with the existing solution.  
+
+One key advantage of REST APIs is the encapsulation of business logic. The API that are hosted on servers can be updated as demanded, while adhering to the REST architecture, smart objects can continue to consume the service the API offers. Another advantage is that is can add a layer of security in front of the services and data it manages.
+
+REST is used in this project to enable clients to request telemetry data, manage IoT Devices and by the Devices themselves. 
