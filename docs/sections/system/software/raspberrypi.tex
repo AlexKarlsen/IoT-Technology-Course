@@ -1,9 +1,32 @@
 \subsection{Device (Raspberry Pi)}
-\textbf{Setup}\\
-A Raspberry Pi equiped with a sense hat...\\
+The Raspberry Pi is equipped with a Sense HAT. When the Pi boots it starts executing the python code. Initially it connects to the MQTT server as follows.
+\begin{lstlisting}[language=Python, caption=Python MQTT setup, label={lst:rpmqtt}]
+    mqttc = mqtt.Client()
+    # Assign event callbacks
+    mqttc.on_message = on_message
+    mqttc.on_connect = on_connect
+    mqttc.on_publish = on_publish
+    mqttc.on_subscribe = on_subscribe
+    ...
+    # Connect
+    mqttc.username_pw_set(username, password)
+    mqttc.connect(host, port) 
+\end{lstlisting}
+Where the callbacks are self written functions, and username and password, comes from a config file.\\
+The Pi then checks up against its digital twin, to check if its own configuration as fallen behind, while offline.
+\begin{lstlisting}[language=Python, caption=Python fetch digital twin config, label={lst:rpdtc}]
+    resp = requests.get(apiEndpoint)
+    respObj = resp.json()
+\end{lstlisting}
+The Pi then starts performing its intended task, monitoring the environment. To do so the Python library SenseHat is used. The singleReading functions takes a single reading from all the used sensors and returns them. The readPeriodically takes a periode in seconds and a handler, it then uses the singleReading and passes the readings to the handler, then is uses threading to call it self again after the periode has passed.
+\begin{lstlisting}[language=Python, caption=Python reading from sensehat, label={lst:rprfsh}]
+    sense = SenseHat()
 
-\noindent\textbf{Code}\\
-\underline{Reading from sense hat}\\
-...\\
-\underline{Using MQTT}\\
-...
+    def singleReading():
+        return [sense.temp, sense.humidity, sense.pressure]
+    
+    def readPeriodically(periode, handler): 
+        handler(singleReading())
+        threading.Timer(periode, readPeriodically, [periode, handler]).start()
+\end{lstlisting}
+\todo[inline]{References!}
