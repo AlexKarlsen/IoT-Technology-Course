@@ -38,7 +38,6 @@ client.on('connect', function () {
   router.get('/api/service/device/stream', function (req, res) {
     console.log('Live connection to device data');
     // send headers for event-stream connection
-    // see spec for more information
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
@@ -87,7 +86,6 @@ client.on('connect', function () {
 
   router.get('/api/telemetry/stream', function (req, res) {
     // send headers for event-stream connection
-    // see spec for more information
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
