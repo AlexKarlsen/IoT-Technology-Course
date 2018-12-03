@@ -31,7 +31,7 @@
 \usepackage[numbers]{natbib}
 \usepackage{tcolorbox}
 \renewcommand{\bibsection}{}
-\bibliographystyle{ieeetr}
+\bibliographystyle{IEEEtran}
 
 \definecolor{lightgray}{rgb}{.9,.9,.9}
 \definecolor{darkgray}{rgb}{.2,.2,.2}
@@ -47,14 +47,15 @@
   ndkeywordstyle=\color{js-yellow}\bfseries,
   identifierstyle=\color{js-blue},
   keywordstyle=[2]{\color{js-blue}},
-  otherkeywords = {+,.,;, ), (},
-  morekeywords = [2]{+,.,;,(,)},
+  otherkeywords = {+,.,;, ), (,:},
+  morekeywords = [2]{+,.,;,(,),:},
   comment=[l]{//},
   morecomment=[s]{/*}{*/},
   commentstyle=\color{js-green}\ttfamily,
   stringstyle=\color{orange}\ttfamily,
   morestring=[b]',
   morestring=[b]"
+  moredelim=[s][\color{js-blue}]{\#\{}{\}}
 }
 \lstdefinestyle{js}{
    language=JavaScript,

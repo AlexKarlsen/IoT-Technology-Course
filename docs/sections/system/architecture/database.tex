@@ -1,1 +1,1 @@
-NoSQL Database, MongoDb, storing sensor telemetry and device twins 
+The database purpose is to store telemetry data and device twins. A NoSQL database like MongoDb is a good match. NoSQL stores data as JSON documents rather than relational tables. JSON is a well suited format because of the aforementioned compactness required for constrained IoT devices. Sensor readings can be stored as they are sent from the device by appending to the document and device twin can be stored in the database in the exact same format as on the device and updating the fields when required. 
