@@ -1,4 +1,23 @@
 import paho.mqtt.client as mqtt
+import os
+
+def create()
+    mqttc = mqtt.Client()
+    mqttc.on_message = on_message
+    mqttc.on_connect = on_connect
+    mqttc.on_publish = on_publish
+    mqttc.on_subscribe = on_subscribe
+    # mqttc.on_log = on_log ## Uncomment to enable debug messages
+    ## Getting environment variables, for MQTT
+    load_dotenv()
+    host = os.getenv("HOST")
+    username = os.getenv("USERNAME")
+    password = os.getenv("PASSWORD")
+    port = int(os.getenv("PORT"))
+    ## Connect MQTT
+    mqttc.username_pw_set(username, password)
+    mqttc.connect(host, port)
+    return mqttc
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT Broker")
