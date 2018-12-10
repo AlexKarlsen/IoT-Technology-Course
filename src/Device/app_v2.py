@@ -7,7 +7,7 @@ import datetime
 import constants
 import config
 import sense
-import mqtthandles
+import mqtthelper
 
 sense.setInbounds()
 
@@ -21,22 +21,7 @@ deviceId = "myDevice"
 deviceSubscription = "device/" + deviceId
 
 ## MQTT 
-mqttc = mqtt.Client()
-## Assign MQTT event callbacks
-mqttc.on_message = mqtthandles.on_message
-mqttc.on_connect = mqtthandles.on_connect
-mqttc.on_publish = mqtthandles.on_publish
-mqttc.on_subscribe = mqtthandles.on_subscribe
-# mqttc.on_log = on_log ## Uncomment to enable debug messages
-## Getting environment variables, for MQTT
-load_dotenv()
-host = os.getenv("HOST")
-username = os.getenv("USERNAME")
-password = os.getenv("PASSWORD")
-port = int(os.getenv("PORT"))
-## Connect MQTT
-mqttc.username_pw_set(username, password)
-mqttc.connect(host, port)
+mqttc = mqtthelper.create()
 ## Getting device state from server
 deviceConfig = config.getSavedState()
 resp = requests.get(apiEndpoint)
