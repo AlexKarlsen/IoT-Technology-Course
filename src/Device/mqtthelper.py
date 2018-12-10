@@ -22,7 +22,6 @@ def create()
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT Broker")
 
-
 def on_message(client, obj, msg):
     tmp = json.loads(msg.payload.decode('utf8'))
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
@@ -47,10 +46,8 @@ def on_message(client, obj, msg):
     else:
         print('No subscription handler')
 
-
 def on_publish(client, obj, mid):
     print("mid: " + str(mid))
-
 
 def on_subscribe(client, obj, mid, granted_qos):
     print("Subscribed: " + str(mid) + " " + str(granted_qos))
