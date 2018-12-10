@@ -1,20 +1,5 @@
 \subsection{Server}
-The server is the entity that binds the solution together. It serves as a REST API to the device and the application. It communicates with the devices trough MQTT protocol and sits in front of the database, responsible for reading and writing data from the IoT device and the Apllication. \\\\ The server handles communication with the IoT Device through the MQTT broker. The MQTT broker is hosted at CloudMQTT. The topic-based Publish/Subscribe pattern makes it easy to establish bi-directional communication. To set it up the node module 'mqtt' must be installed. After a MQTT Client is created, we can subscribe to the relevant topics. All we must do is to implement the required callback functions. We can publish simply by calling the publish method and pass the topic and message to send as parameters. Table \ref{tbl:topics} presents all the topics and a description.
-
-\begin{table}[H]
-    \centering
-    \begin{tabular}{|l|p{10cm}|}
-    \hline
-    \textbf{MQTT Topics}    & \textbf{Description} \\ \hline
-    Telemetry & Devices publish sensor telemetry to this topic. The server subscribes, sends the telemetry REST Endpoint Stream* and stores the value in the database \\ \hline
-    Report & Devices publishes reports on update request to this topic. The server send the report to services Rest Endpoint Stream* and updates the device twin \\ \hline
-    Alarm & Devices publish alarm when thresholds are exceeded to this topic. The server sends the alarm to the service Rest Endpoint Stream* \\ \hline
-    device/:DeviceId & The server publish update request messages to this filtered device topic. The device updates its settings and report back to the server. \\ \hline
-    \end{tabular}
-    \caption{MQTT Topics.\\ * REST Enpoint are explained in table \ref{tbl:device}, \ref{tbl:telemetry} and \ref{tbl:service}}
-    \label{tbl:topics}
-\end{table}
-
+The server is the entity that binds the solution together. It communicates with the devices trough MQTT protocol, and serves as a REST API to the device and the application. and sits in front of the database, responsible for reading and writing data from the IoT device and the Apllication. \\\\ The server handles communication with the IoT Device through the MQTT broker. 
 The server exposes services to the device and the application. The REST API exposes a service to the device to get it's own setting. This service is used upon start-up to get updates, that happened while the device was offline. 
 The REST API exposes also services to get all telemetry data, and to get telemetry data filtered for a single device and to establish a live stream of device data. 
 The REST API exposes services to the application. Services as; to get all the devices, to get a device's settings,to update a device thresholds and to get live stream of device events. The exposed HTTP endpoints can be found in API tables after the tables the services of the API are elaborated upon. Table \ref{tbl:device} presents the device endpoints. 

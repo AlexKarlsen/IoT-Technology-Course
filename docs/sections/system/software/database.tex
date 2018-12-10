@@ -1,0 +1,45 @@
+\subsection{Database}
+
+\begin{lstlisting}[language=Python, caption=Device Twin, label={lst:twin}, basicstyle=\tiny]
+    {
+        "_id": {"$oid": "5bae13bafb6fc01d131c1533"}, 
+        "deviceId": "myDevice", 
+        "DesiredState": {
+            "Threshold": {
+                "Temperature": {
+                    "value": 28, 
+                    "unit": "celsius"
+                }, 
+                "Humidity": {
+                    "value": 54, 
+                    "unit": "percent"
+                }, 
+                "Pressure": {
+                    "value": 1025, 
+                    "unit": "bar"
+                }
+            }
+        }, 
+        "ReportedState": {
+            "Threshold": {
+                "Temperature": {
+                    "value": 28, 
+                    "unit": "celsius"
+                }, 
+                "Humidity": {
+                    "value": 54, 
+                    "unit": "percent"
+                }, 
+                "Pressure": {
+                    "value": 1025, 
+                    "unit": "bar"
+                }
+            }
+        }, 
+        "Alarms": {
+            Temperature: true,
+            Humidity: false,
+            Pressure: false
+        }
+    } 
+\end{lstlisting}

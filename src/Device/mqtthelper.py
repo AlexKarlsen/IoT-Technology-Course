@@ -1,7 +1,16 @@
 import paho.mqtt.client as mqtt
 import os
+from dotenv import load_dotenv
+import config
+import json
+import constants
 
-def create()
+mqttc = mqtt.Client()
+
+deviceId = "myDevice"
+deviceSubscription = "device/" + deviceId
+
+def create():
     mqttc = mqtt.Client()
     mqttc.on_message = on_message
     mqttc.on_connect = on_connect
@@ -17,6 +26,9 @@ def create()
     ## Connect MQTT
     mqttc.username_pw_set(username, password)
     mqttc.connect(host, port)
+    ## Start subscribe to MQTT, with QoS level 0
+    mqttc.subscribe("threshold")
+    mqttc.subscribe(deviceSubscription)
     return mqttc
 
 def on_connect(client, userdata, flags, rc):
