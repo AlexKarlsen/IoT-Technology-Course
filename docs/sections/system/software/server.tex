@@ -1,8 +1,31 @@
 \subsection{Server}
-The server is the entity that binds the solution together. It communicates with the devices trough MQTT protocol, and serves as a REST API to the device and the application. and sits in front of the database, responsible for reading and writing data from the IoT device and the Apllication. \\\\ The server handles communication with the IoT Device through the MQTT broker. 
-The server exposes services to the device and the application. The REST API exposes a service to the device to get it's own setting. This service is used upon start-up to get updates, that happened while the device was offline. 
+The server is the entity that binds the solution together. It manges all data of the solution by communicating with the database. It manages communication with the devices trough MQTT. It serves as a REST API for the device to retrieve its' setting and to the application to get telemetry data and manage devices. 
+
+\subsubsection{MQTT}
+The server can easily provide MQTT capabilities by installing the MQTT NPM package. The API provides an mqtt client object with callback functions for connecting, subscribing, publishing and to receive messages. These methods needs to be implement in the same fashion as the python library for the device. Listing \ref{lst:nodemqtt} shows how to connect and subscribe and it shows th callback handles upon connection or when receiving messages. 
+
+\begin{lstlisting}[language=Python, caption=Node.js MQTT, label={lst:nodemqtt}]
+    // Connect mqtt with credentials
+    this.mqttClient = mqtt.connect(this.host, this.options);
+
+    // Connection callback
+    this.mqttClient.on('connect', () => {
+      console.log(`mqtt client connected`);
+    });
+
+    // Subscribe to required subscriptions
+    this.mqttClient.subscribe(subscriptions, { qos: 0 });
+
+    // When a message arrives handle it accordingly
+    this.mqttClient.on('message', function (topic, message) {
+        ...
+    }
+\end{lstlisting}
+
+\subsubsection{REST}
+The server exposes services to the device and the application in a RESTful architectural manner. The Rest API exposes one service to devices, where a device can get it's own setting. This service is used upon start-up to get updates, that happened while the device was offline. 
 The REST API exposes also services to get all telemetry data, and to get telemetry data filtered for a single device and to establish a live stream of device data. 
-The REST API exposes services to the application. Services as; to get all the devices, to get a device's settings,to update a device thresholds and to get live stream of device events. The exposed HTTP endpoints can be found in API tables after the tables the services of the API are elaborated upon. Table \ref{tbl:device} presents the device endpoints. 
+The REST API exposes services to the application. Services as; get all the devices, get a device's settings, update a device thresholds and get live stream of device events. The exposed HTTP endpoints can be found in API tables after the tables the services of the API are elaborated upon. Table \ref{tbl:device} presents the device endpoints. 
 
 \begin{table}[H]
     \centering
@@ -46,7 +69,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
 
     Node.js Express Framework provides a way of nicely constructing the API routes and separate the logic into controllers in a MVC-like pattern returning JSON data instead of rendered views. File api/routes/serviceRoutes.js presented in listing \ref{lst:routes} show the routing structure of the REST API Service Endpoint. 
 
-\begin{lstlisting}[style=js, caption=Node.js REST API Routes, label={lst:routes}]
+\begin{lstlisting}[language=Python, caption=Node.js REST API Routes, label={lst:routes}]
     ...
     var baseurl = '/service';
 
@@ -65,11 +88,11 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
     ...
 \end{lstlisting}
 
+\subsubsection{Server-Sent-Event}
 The server enables live stream features by implementing the Server-Sent-Event (SSE) pattern. SSE is an altered HTTP Get Method, where the connection is kept alive. The server sends events event over this open connection to applications, that utilizes this channel and live updates the UI. Below listing \ref{lst:sse} shows how it is implemented.
 
-\begin{lstlisting}[style=js, caption=Server Sent Event, label={lst:sse}]
+\begin{lstlisting}[language=Python, caption=Server Sent Event, label={lst:sse}]
     router.get('/api/telemetry/stream', function (req, res) {
-    // send headers for event-stream connection
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
       'Cache-Control': 'no-cache',
