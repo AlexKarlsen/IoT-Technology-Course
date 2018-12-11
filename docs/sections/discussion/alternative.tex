@@ -1,7 +1,4 @@
 \subsection{Design Alternatives}
-
-SenseHat too close to PI ... IoT Device as Gateway for not IP internet enabled network
-
-websockets vs SSE
-
-protocol investigations, MQTT vs AMQP vs HTTP
+The device could be expanded to a (wireless) sensor network, which then would use the Raspberry Pi as a gateway to the internet.\\
+Instead of the server sending event to specific clients, when new data is received or alarms is raised, the server could be setup to just direct the information to a websocket, that client application then can listen to.\\
+Alternatives to using MQTT could be AMQP or HTTP. HTTP however is not nearly as lightweight and it is document centric instead of data centric. AMQP ...
