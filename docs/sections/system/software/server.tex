@@ -88,7 +88,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
     ...
 \end{lstlisting}
 
-\subsubsection{Server-Sent-Event}
+\subsubsection{Stream Data}
 The server enables live stream features by implementing the Server-Sent-Event (SSE) pattern. SSE is an altered HTTP Get Method, where the connection is kept alive. The server sends events event over this open connection to applications, that utilizes this channel and live updates the UI. Below listing \ref{lst:sse} shows how it is implemented.
 
 \begin{lstlisting}[language=Python, caption=Server Sent Event, label={lst:sse}, basicstyle=\tiny]
