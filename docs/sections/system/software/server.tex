@@ -4,7 +4,7 @@ The server is the entity that binds the solution together. It manges all data of
 \subsubsection{MQTT}
 The server can easily provide MQTT capabilities by installing the MQTT NPM package. The API provides an mqtt client object with callback functions for connecting, subscribing, publishing and to receive messages. These methods needs to be implement in the same fashion as the python library for the device. Listing \ref{lst:nodemqtt} shows how to connect and subscribe and it shows th callback handles upon connection or when receiving messages. 
 
-\begin{lstlisting}[language=Python, caption=Node.js MQTT, label={lst:nodemqtt}]
+\begin{lstlisting}[language=Python, caption=Node.js MQTT, label={lst:nodemqtt}, basicstyle=\tiny]
     // Connect mqtt with credentials
     this.mqttClient = mqtt.connect(this.host, this.options);
 
@@ -69,7 +69,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
 
     Node.js Express Framework provides a way of nicely constructing the API routes and separate the logic into controllers in a MVC-like pattern returning JSON data instead of rendered views. File api/routes/serviceRoutes.js presented in listing \ref{lst:routes} show the routing structure of the REST API Service Endpoint. 
 
-\begin{lstlisting}[language=Python, caption=Node.js REST API Routes, label={lst:routes}]
+\begin{lstlisting}[language=Python, caption=Node.js REST API Routes, label={lst:routes}, basicstyle=\tiny]
     ...
     var baseurl = '/service';
 
@@ -91,7 +91,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
 \subsubsection{Server-Sent-Event}
 The server enables live stream features by implementing the Server-Sent-Event (SSE) pattern. SSE is an altered HTTP Get Method, where the connection is kept alive. The server sends events event over this open connection to applications, that utilizes this channel and live updates the UI. Below listing \ref{lst:sse} shows how it is implemented.
 
-\begin{lstlisting}[language=Python, caption=Server Sent Event, label={lst:sse}]
+\begin{lstlisting}[language=Python, caption=Server Sent Event, label={lst:sse}, basicstyle=\tiny]
     router.get('/api/telemetry/stream', function (req, res) {
     res.writeHead(200, {
       'Content-Type': 'text/event-stream',
