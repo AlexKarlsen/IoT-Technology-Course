@@ -1,8 +1,8 @@
 \subsection{Server}
-The server is the entity that binds the solution together. It manges all data of the solution by communicating with the database. It manages communication with the devices trough MQTT. It serves as a REST API for the device to retrieve its' setting and to the application to get telemetry data and manage devices. 
+The server is the entity that binds the solution together. It manges all data of the solution by communicating with the database. It manages communication with the devices trough MQTT. Lastly it serves as a REST API for the device to retrieve its' setting and to the application to get telemetry data and manage devices. 
 
 \subsubsection{MQTT}
-The server can easily provide MQTT capabilities by installing the MQTT NPM package. The API provides an mqtt client object with callback functions for connecting, subscribing, publishing and to receive messages. These methods needs to be implement in the same fashion as the python library for the device. Listing \ref{lst:nodemqtt} shows how to connect and subscribe and it shows th callback handles upon connection or when receiving messages. 
+The server provides MQTT capabilities by installing the MQTT NPM package \cite{mqtt}. The API provides an mqtt client object with callback functions for connecting, subscribing, publishing and to receive messages. These methods needs to be implement in the same fashion as the python library for the device. Listing \ref{lst:nodemqtt} shows how to connect and subscribe and it shows th callback handles upon connection or when receiving messages. 
 
 \begin{lstlisting}[language=Python, caption=Node.js MQTT, label={lst:nodemqtt}, basicstyle=\tiny]
     // Connect mqtt with credentials
