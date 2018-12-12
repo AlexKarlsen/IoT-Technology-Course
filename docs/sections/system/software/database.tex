@@ -1,6 +1,6 @@
 \subsection{Database}
 \subsubsection{Device Twin}
-The device twin is implemented as a JSON document stored in a MongoDB. The document contains device specific information along with the real-time state information. Listing \ref{lst:twin} shows the device twin object.
+The device twin is implemented as a JSON document stored in a MongoDB. The document contains device specific information along with the real-time state information. The database is like the server hosted at Heroku. Listing \ref{lst:twin} shows the device twin object.
 \begin{lstlisting}[language=Python, caption=Device Twin, label={lst:twin}, basicstyle=\tiny]
     {
         "_id": {"$oid": "5bae13bafb6fc01d131c1533"}, 
