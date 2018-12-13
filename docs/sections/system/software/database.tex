@@ -1,7 +1,8 @@
 \subsection{Database}
-\subsubsection{Device Twin}
-The device twin is implemented as a JSON document stored in a MongoDB. The document contains device specific information along with the real-time state information. The database is like the server hosted at Heroku. Listing \ref{lst:twin} shows the device twin object.
-\begin{lstlisting}[language=Python, caption=Device Twin, label={lst:twin}, basicstyle=\tiny]
+The database consists of two collections; a device twin collection and a telemetry data collection. Each device has one entry for both collections.
+\subsubsection*{Device Twin}
+The device twin is implemented as a JSON document stored in a MongoDB. The document contains device specific information along with the real-time state information. The database is like the server hosted at Heroku. The device twin holds the information about the thresholds. The user can set the DesiredState section and the device itself can report, how it is configured in the ReportedState section. This enables us to provide transparency towards consistency of the device's state. If thresholds are exceeded alarms will be raised by the device in the alarm section of the device twin. Listing \ref{lst:twin} shows the device twin object.
+\begin{lstlisting}[language=Python, caption=Device Twin, label={lst:twin}, basicstyle=\scriptsize]
     {
         "_id": {"$oid": "5bae13bafb6fc01d131c1533"}, 
         "deviceId": "myDevice", 
@@ -45,13 +46,11 @@ The device twin is implemented as a JSON document stored in a MongoDB. The docum
     } 
 \end{lstlisting}
 
-The device twin holds the information about the thresholds. The user can set the DesiredState section and the device itself can report, how it is configured in the ReportedState section. This enables us to provide transparency towards consistency of the device's state. If thresholds are exceeded alarms will be raised by the device in the alarm section of the device twin.
-
-\subsubsection{Telemetry Data}
+\subsubsection*{Telemetry Data}
 
 The telemetry data from the IoT devices are likewise stored as JSON documents. One document per device, when new telemetry is received, it is appended to the array TelemetryData. A telemetry object contains the measured value and required meta data, see listing \ref{lst:telemetry} 
 
-\begin{lstlisting}[language=Python, caption=Telemetry Data, label={lst:telemetry}, basicstyle=\tiny]
+\begin{lstlisting}[language=Python, caption=Telemetry Data, label={lst:telemetry}, basicstyle=\scriptsize]
 {
     "_id": {
         "$oid": "5bba2403faddc7871f1cbce1"

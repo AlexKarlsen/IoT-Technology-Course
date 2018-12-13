@@ -29,9 +29,9 @@ Figure \ref{fig:deviceoverview} shows the state of the device, the threshold it 
     \label{fig:deviceoverview}
 \end{figure}
 
-The app subscribes to the server-sent-event by constructing an Event Source with an event listener, see listing \ref{lst:es}
+The app subscribes to SSE by constructing an Event Source with an event listener, see listing \ref{lst:es}
 
-\begin{lstlisting}[language=Python, caption=Event Source, label={lst:es}]
+\begin{lstlisting}[language=Python, caption=Event Source, label={lst:es}, basicstyle=\scriptsize]
     this.source = 
         new EventSource('http://localhost:3000/api/telemetry/stream');
     this.source.addEventListener('message', event => {
@@ -43,7 +43,7 @@ The app subscribes to the server-sent-event by constructing an Event Source with
 The event listener adds the received telemetry data to the data structures holding prior telemetry received from an API request, as shown in listing \ref{lst:apirequest}. 
 
 
-\begin{lstlisting}[language=Python, caption=API Request, label={lst:apirequest}]
+\begin{lstlisting}[language=Python, caption=API Request, label={lst:apirequest}, basicstyle=\scriptsize]
     getAllTelemetry(): Observable<any> {
         return this.http.get(this.telemetryUrl);
       }
