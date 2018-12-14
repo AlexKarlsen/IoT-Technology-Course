@@ -40,11 +40,4 @@ The app subscribes to SSE by constructing an Event Source with an event listener
     )
 \end{lstlisting}
 
-The event listener adds the received telemetry data to the data structures holding prior telemetry received from an API request, as shown in listing \ref{lst:apirequest}. 
-
-
-\begin{lstlisting}[language=Python, caption=API Request, label={lst:apirequest}, basicstyle=\scriptsize]
-    getAllTelemetry(): Observable<any> {
-        return this.http.get(this.telemetryUrl);
-      }
-\end{lstlisting}
+The event listener adds the received telemetry data to the data structure.

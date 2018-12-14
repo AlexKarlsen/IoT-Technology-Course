@@ -1,17 +1,18 @@
 \subsection{MQTT Broker}
 
-The MQTT broker is hosted at CloudMQTT. The topic-based Publish/Subscribe pattern makes it easy to establish bi-directional communication. To set it up the node module 'mqtt' must be installed. After a MQTT Client is created, they can subscribe to the relevant topics. All that is needed to do is implement the required callback functions. Clients can publish simply by calling the publish method and pass the topic and message to send as parameters. Table \ref{tbl:topics} presents all the topics and a description. \todo{Runs alittle over into server and device mqtt, maybe this should be only broker?}
+The MQTT broker is hosted at CloudMQTT. It is easy to sign up with your google account and get started. CloudMQTT has a free plan supporting up to 5 devices. The CloudMQTT portal provides the required API Key and additional properties needed to establish authenticated connections. Using CloudMQTT as message broker is straight forward, there is minimal configurations as the topics are string based and can be published and subscribed to dynamically. However predefined interfaces, in this case topics, is a good practice. Well-defined interfaces allow parallel working and a more neat integration process. Table \ref{tbl:topics} presents all the topics defined in this project and a description from the publisher's perspective.
 
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|p{10cm}|}
     \hline
     \textbf{MQTT Topics}    & \textbf{Description} \\ \hline
-    Telemetry & Devices publish sensor telemetry to this topic. The server subscribes, sends the telemetry REST Endpoint Stream* and stores the value in the database \\ \hline
-    Report & Devices publishes reports on update request to this topic. The server send the report to services Rest Endpoint Stream* and updates the device twin \\ \hline
-    Alarm & Devices publish alarm when thresholds are exceeded to this topic. The server sends the alarm to the service Rest Endpoint Stream* \\ \hline
-    device/:DeviceId & The server publish update request messages to this filtered device topic. The device updates its settings and report back to the server. \\ \hline
+    Telemetry & Devices publish acquired sensor telemetry to this topic. \\ \hline
+    device/:DeviceId & The server publish update request messages of threshold values to this topic. The topic is filtered by device id. \\ \hline
+    Report & Devices publish reports on update request to this topic. \\ \hline
+    Alarm & Devices publish alarms when thresholds are exceeded to this topic. \\ \hline
+    
     \end{tabular}
-    \caption{MQTT Topics.\\ * REST Enpoint are explained in table \ref{tbl:device}, \ref{tbl:telemetry} and \ref{tbl:service}}
+    \caption{MQTT Topics}
     \label{tbl:topics}
 \end{table}
