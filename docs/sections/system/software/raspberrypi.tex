@@ -1,32 +1,113 @@
 \subsection{Device}
-The Raspberry Pi is equipped with a Sense HAT. When the Pi boots it starts executing the python code. Initially it connects to the MQTT server as follows.
-\begin{lstlisting}[language=Python, caption=Python MQTT setup, label={lst:rpmqtt}, basicstyle=\scriptsize]
-    mqttc = mqtt.Client()
-    # Assign event callbacks
-    mqttc.on_message = on_message
-    mqttc.on_connect = on_connect
-    mqttc.on_publish = on_publish
-    mqttc.on_subscribe = on_subscribe
-    ...
-    # Connect
-    mqttc.username_pw_set(username, password)
-    mqttc.connect(host, port) 
-\end{lstlisting}
-Where the callbacks are self written functions, and username and password, comes from a config file.\\
-The Pi then checks up against its digital twin, to check if its own configuration as fallen behind, while offline.
-\begin{lstlisting}[language=Python, caption=Python fetch digital twin config, label={lst:rpdtc}, basicstyle=\scriptsize]
-    resp = requests.get(apiEndpoint)
-    respObj = resp.json()
-\end{lstlisting}
-The Pi then starts performing its intended task, monitoring the environment. To do so the Python library SenseHat is used. The singleReading functions takes a single reading from all the used sensors and returns them. The readPeriodically takes a periode in seconds and a handler, it then uses the singleReading and passes the readings to the handler, then is uses threading to call it self again after the periode has passed.
+The code running on the device (Raspberry Pi 3) can be seen as three main parts; Bootup, Sense HAT and MQTT.
+
+\subsubsection*{Boot}
+At boot the device initially loads its last state from its config json file. Then the recent state is fetched from the device twin, and they are compared, and updated if needed. The MQTT is starteded, which will be described later. Lastly the device is set to periodically perform and send readings in a loop. 
+
+\subsubsection*{Senste HAT}
+All things related to using the Sense HAT, has been put in its own python file \textit{sense.py}. This file consist of five functions, and is using the libraries sense\_hat, time and threading.
+The first two functions are singleReading and readPeriodically. singleReading, reads from all the sensors and returns the values, readPeriodically, uses singleReading, to get a reading and passes the readings to a handler, and initializes an other reading to be performed after a giving periode.
 \begin{lstlisting}[language=Python, caption=Python reading from sensehat, label={lst:rprfsh}, basicstyle=\scriptsize]
     sense = SenseHat()
 
     def singleReading():
-        return [sense.temp, sense.humidity, sense.pressure]
-    
+        return [sense.temp, sense.humidity, sense.pressure]   
+
     def readPeriodically(periode, handler): 
         handler(singleReading())
         threading.Timer(periode, readPeriodically, [periode, handler]).start()
 \end{lstlisting}
-\todo[inline]{References!}
+The two next functions uses the 8x8 LED matrix display, to print a happy green or sad red smiley, using a matrix containing RGB values.
+\begin{lstlisting}[language=Python, caption=example of setting LED matrix, label={lst:rpslm}, basicstyle=\scriptsize]
+    def setInbounds():
+        ...
+        mark = [...]
+        sense.set_pixels(mark)
+\end{lstlisting}
+Lastly it containts an example reading handler (for readPeriodically) that prints the values to the console.
+
+\subsubsection*{MQTT}
+All things related to using the MQTT, has also been put in its own python file \textit{mqtthelper.py}. This file holds a MQTT Client object, has six functions, and uses a bunch of libraries, most importently paho.mqtt.client. The first function is used to initialize the MQTT Client, this is done by creating the MQTT Client using a simple constructor, followed by assigning the other functions as callbacks for MQTT events. Then connection parameters is read from an environment file and used to connect. Lastely it subscribes to get updates regarding its threshold, in both a generel and device specific manor.
+\begin{lstlisting}[language=Python, caption=Python MQTT setup, label={lst:rpmqtt}, basicstyle=\scriptsize]
+    def create():
+        mqttc = mqtt.Client()
+        mqttc.on_message = on_message
+        mqttc.on_connect = on_connect
+        mqttc.on_publish = on_publish
+        mqttc.on_subscribe = on_subscribe
+        # mqttc.on_log = on_log ## Uncomment to enable debug messages
+        ## Getting environment variables, for MQTT
+        load_dotenv()
+        host = os.getenv("HOST")
+        username = os.getenv("USERNAME")
+        password = os.getenv("PASSWORD")
+        port = int(os.getenv("PORT"))
+        ## Connect MQTT
+        mqttc.username_pw_set(username, password)
+        mqttc.connect(host, port)
+        ## Start subscribe to MQTT, with QoS level 0
+        mqttc.subscribe("threshold")
+        mqttc.subscribe(deviceSubscription)
+        return mqttc
+\end{lstlisting}
+The five other functions, are as mentioned above callback function, to; on\_message, on\_connect, on\_publish, on\_subscribe and an on\_log for debugging. The most interesting being on\_message, where the others just prints to the console. on\_message loads the message as json, and then switches on the message topic. On threshold messages it updates its own config, and reports this back to the server.
+\begin{lstlisting}[language=Python, caption=MQTT handler examples, label={lst:rpmqtthe}, basicstyle=\scriptsize]
+    def on_message(client, obj, msg):
+        tmp = json.loads(msg.payload.decode('utf8'))
+        print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
+        if msg.topic == constants.topics["Threshold"]:
+            print(msg.topic)
+            config.setThresholdValue(tmp["type"], tmp["value"])
+            deviceConfig = config.getSavedState()
+            print(deviceConfig)
+        elif msg.topic == deviceSubscription:
+            config.setThresholdValue(tmp["type"], tmp["threshold"])
+            config.setThresholdValue(tmp["type"], tmp["value"])
+            deviceConfig = config.getSavedState()
+            report = config.getSavedState()
+            print(report)
+            reportedState = {
+                "msgType": "Report",
+                "DeviceId": deviceId,
+                "ReportedState": report['ReportedState']
+            }
+            mqttc.publish("report", json.dumps(reportedState))
+            print('publish changes')
+        else:
+            print('No subscription handler')
+
+    def on_publish(client, obj, mid):
+        print("mid: " + str(mid))
+\end{lstlisting}
+
+% The Raspberry Pi is equipped with a Sense HAT. When the Pi boots it starts executing the python code. Initially it connects to the MQTT server as follows.
+% \begin{lstlisting}[language=Python, caption=Python MQTT setup, label={lst:rpmqtt}, basicstyle=\scriptsize]
+%     mqttc = mqtt.Client()
+%     # Assign event callbacks
+%     mqttc.on_message = on_message
+%     mqttc.on_connect = on_connect
+%     mqttc.on_publish = on_publish
+%     mqttc.on_subscribe = on_subscribe
+%     ...
+%     # Connect
+%     mqttc.username_pw_set(username, password)
+%     mqttc.connect(host, port) 
+% \end{lstlisting}
+% Where the callbacks are self written functions, and username and password, comes from a config file.\\
+% The Pi then checks up against its digital twin, to check if its own configuration as fallen behind, while offline.
+% \begin{lstlisting}[language=Python, caption=Python fetch digital twin config, label={lst:rpdtc}, basicstyle=\scriptsize]
+%     resp = requests.get(apiEndpoint)
+%     respObj = resp.json()
+% \end{lstlisting}
+% The Pi then starts performing its intended task, monitoring the environment. To do so the Python library SenseHat is used. The singleReading functions takes a single reading from all the used sensors and returns them. The readPeriodically takes a periode in seconds and a handler, it then uses the singleReading and passes the readings to the handler, then is uses threading to call it self again after the periode has passed.
+% \begin{lstlisting}[language=Python, caption=Python reading from sensehat, label={lst:rprfsh}, basicstyle=\scriptsize]
+%     sense = SenseHat()
+
+%     def singleReading():
+%         return [sense.temp, sense.humidity, sense.pressure]
+    
+%     def readPeriodically(periode, handler): 
+%         handler(singleReading())
+%         threading.Timer(periode, readPeriodically, [periode, handler]).start()
+% \end{lstlisting}
+% \todo[inline]{References!}
