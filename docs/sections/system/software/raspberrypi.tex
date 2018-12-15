@@ -2,11 +2,11 @@
 The code running on the device (Raspberry Pi 3) can be seen as three main parts; Bootup, Sense HAT and MQTT.
 
 \subsubsection*{Boot}
-At boot the device initially loads its last state from its config json file. Then the recent state is fetched from the device twin, and they are compared, and updated if needed. The MQTT is starteded, which will be described later. Lastly the device is set to periodically perform and send readings in a loop. 
+At boot the device initially loads its last state from its config json file. Then the recent state is fetched from the device twin, and they are compared, and updated if needed. The MQTT is started, which will be described later. Lastly the device is set to periodically perform and send readings in a loop. 
 
 \subsubsection*{Senste HAT}
 All things related to using the Sense HAT, has been put in its own python file \textit{sense.py}. This file consist of five functions, and is using the libraries sense\_hat, time and threading.
-The first two functions are singleReading and readPeriodically. singleReading, reads from all the sensors and returns the values, readPeriodically, uses singleReading, to get a reading and passes the readings to a handler, and initializes an other reading to be performed after a giving periode.
+The first two functions are singleReading and readPeriodically. singleReading, reads from all the sensors and returns the values, readPeriodically, uses singleReading, to get a reading and passes the readings to a handler, and initializes an other reading to be performed after a giving period.
 \begin{lstlisting}[language=Python, caption=Python reading from sensehat, label={lst:rprfsh}, basicstyle=\scriptsize]
     sense = SenseHat()
 
@@ -24,10 +24,10 @@ The two next functions uses the 8x8 LED matrix display, to print a happy green o
         mark = [...]
         sense.set_pixels(mark)
 \end{lstlisting}
-Lastly it containts an example reading handler (for readPeriodically) that prints the values to the console.
+Lastly it contains an example reading handler (for readPeriodically) that prints the values to the console.
 
 \subsubsection*{MQTT}
-All things related to using the MQTT, has also been put in its own python file \textit{mqtthelper.py}. This file holds a MQTT Client object, has six functions, and uses a bunch of libraries, most importently paho.mqtt.client. The first function is used to initialize the MQTT Client, this is done by creating the MQTT Client using a simple constructor, followed by assigning the other functions as callbacks for MQTT events. Then connection parameters is read from an environment file and used to connect. Lastely it subscribes to get updates regarding its threshold, in both a generel and device specific manor.
+All things related to using the MQTT, has also been put in its own python file \textit{mqtthelper.py}. This file holds a MQTT Client object, has six functions, and uses a bunch of libraries, most importantly paho.mqtt.client. The first function is used to initialize the MQTT Client, this is done by creating the MQTT Client using a simple constructor, followed by assigning the other functions as callbacks for MQTT events. Then connection parameters is read from an environment file and used to connect. Lastly it subscribes to get updates regarding its threshold, in both a general and device specific manor.
 \begin{lstlisting}[language=Python, caption=Python MQTT setup, label={lst:rpmqtt}, basicstyle=\scriptsize]
     def create():
         mqttc = mqtt.Client()
