@@ -1,5 +1,13 @@
 \subsection*{Technology evaluation}
-Raspberry pi \\
-MQTT, is very easy to setup and use. It works very well\\
-Device Twin is a clear way to allow for modification of devices, even when they are offline.\\
-REST ..??
+In this section we evaluate the technologies used in this project. Alternatives to these technologies will be elaborated upon later.
+\begin{description}
+    \item[Raspberry Pi] is nice to work with. It has a Linux OS and can run Python 3. This is useful for rapid protoyping, as we developed and tested most of the device code on our own machines. The coded is easily ported to the Pi over a SSH socket. Only the code which interface the hardware i.e. the Sense HAT could not be tested on a local machine and needed the Pi to run. Python 3 is easy to install and has good library support for the Sense HAT, MQTT and HTTP. \todo{This is alternatives ->} In scenarios with strict deterministic real-time requirements, micro controllers with deterministic guarantees would be preferable. RPis are actually used in real-life IoT applications and there exist a version, Revolution Pi, that adhere to industry standards. Even though the Raspberry Pis are rather cheap, it would in some cases be cheaper to use micro controllers. 
+    \item[Sense HAT] The Sense HAT mount easily to the Pi and has as mentioned good library support. It is not useful in for real-life weather station scenarios, as it is place too close to the Pi's hardware, which makes the temperature reading of the environment way too high.
+    \item[Device Twin] is a nice and logical way to represent a physical device. It is easy to monitor and manage the device trough the twin.  
+    \item[MQTT] requires minimal configuration. Topics can be publish and subscribed to run-time. It is easy to work with. Library support in both Python and Node.js work like a charm. 
+    \item[Node.js] and express quickly get one started on server-side development. It comes with Node Package Manager (NPM), which has a lot of useful libraries. Libraries like; MQTT and MongoDB Client. The deployment process to Heroku work just like a regular push to a git repository. It is easy to structure routing in a Restful manner using the express framework.
+    \item[REST] makes the design process to define services and routing neat. The hierarchical URI definition is highly logical to work with.  
+    \item[MongoDB] the NoSQL database has been nice to work with, as it overcomes the impedance mismatch when using relational databases. The objects in code is already JSON format, so no transformation is needed. The node.js client makes it easy to retrieve and insert data in the database.   
+    \item[Angular] the javascript framework overcomes a lot of tedious web development and let one create nice-looking data-driven web applications in much less time.
+    \item[SSE] enables data streaming, however we did not find a good way to integrate it without introducing coupling. When constructing the interface one must be aware, that streaming various data sources as telemetry and alarms requires the client to filter the data.
+\end{description}
