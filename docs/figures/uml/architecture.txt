@@ -4,9 +4,9 @@ skinparam monochrome true
 skinparam shadowing false
 
 node mqtt as "**MoM**\nMQTT Broker"
-node device as "**IoT Device**"
+node device as "**IoT Device**\nRaspberry Pi 3 B"
 node server as "**Server**\nRest API"
-node app as "**Application**"
+node app as "**Application**\n Angular 6 Web App"
 database db as "Database" {
     rectangle twin as "**Collection**\nDevice Twin"
     rectangle telemetry as "**Collection**\nTelemetry Data"

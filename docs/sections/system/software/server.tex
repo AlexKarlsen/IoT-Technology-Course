@@ -1,5 +1,5 @@
 \subsection{Server}
-The server is the entity that binds the solution together. The server manges all data storage of the solution by communicating with the database, it communicates with the devices trough MQTT and lastly it serves as a REST API for the device to retrieve its' settings and to the application to get telemetry data and manage devices. The server is hosted at Heroku \cite{heroku}. 
+The server is the entity that binds the solution together. The server manges all data storage by communicating with the database. The server communicates with the devices trough MQTT and lastly it serves as a REST API for the device to retrieve its settings and to the application to get telemetry data and manage devices. The server is hosted at Heroku \cite{heroku}. 
 
 \subsubsection*{MQTT}
 The server provides MQTT capabilities by installing the MQTT NPM package \cite{mqtt}. The API provides an mqtt client object with callback functions for connecting, subscribing, publishing and to receive messages. These methods needs to be implement in the same fashion as the python library for the device. Listing \ref{lst:nodemqtt} shows how to connect and subscribe and it shows th callback handles upon connection or when receiving messages. 
@@ -23,9 +23,9 @@ The server provides MQTT capabilities by installing the MQTT NPM package \cite{m
 \end{lstlisting}
 
 \subsubsection*{REST}
-The server exposes services to the device and the application in a RESTful architectural manner. The Rest API exposes one service to devices, where a device can get it's own setting. This service is used upon start-up to get updates, that has happened while the device was offline. 
+The server exposes services to the device and the application in a RESTful architectural manner. The Rest API exposes one service to devices, where a device can get its device twin setting. This service is used upon start-up to get updates, that has happened while the device was offline. 
 The REST API exposes services to get all telemetry data, and to get telemetry data filtered for a single device and to establish a live stream of device data. 
-The REST API exposes services to the application. Services as; get all the devices, get a device's settings, update a device thresholds and get live stream of device events. The data are stored in a Mongo DB, the server uses the mongodb driver for node.js \cite{mongodriver} to implement the specified services, that can be found in API tables below. Table \ref{tbl:device} presents the device endpoints. 
+The REST API exposes services to the application. Services as; get all the devices, get a device's settings, update a device thresholds and get live stream of device events. The data is stored in a Mongo DB, the server uses the mongodb driver for node.js \cite{mongodriver} to implement the specified services, that can be found in API tables below. Table \ref{tbl:device} presents the device endpoints. 
 
 \begin{table}[H]
     \centering
@@ -37,7 +37,7 @@ The REST API exposes services to the application. Services as; get all the devic
     \caption{REST Endpoint Device}
     \label{tbl:device}
 \end{table}
-The server also exposes HTTP REST Endpoint for applications to get telemetry data from devices as seen in table \ref{tbl:telemetry}.
+The server also exposes HTTP REST Endpoints for clients to get telemetry data, as seen in table \ref{tbl:telemetry}.
 
 \begin{table}[H]
     \centering
@@ -51,7 +51,7 @@ The server also exposes HTTP REST Endpoint for applications to get telemetry dat
     \caption{REST Endpoint Telemetry}
     \label{tbl:telemetry}
 \end{table}
-The server exposes HTTP REST endpoint service to manage devices and subscribe to the reports and alerts stream as seen in table \ref{tbl:service}.
+The server exposes HTTP REST endpoints for clients to manage devices and subscribe to report and alert stream, as seen in table \ref{tbl:service}.
 
     \begin{table}[H]
         \centering
@@ -67,7 +67,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
         \label{tbl:service}
     \end{table}
 
-    Node.js Express Framework provides a way of nicely constructing the API routes and separate the logic into controllers in a MVC-like pattern returning JSON data instead of rendered views. File api/routes/serviceRoutes.js presented in listing \ref{lst:routes} show the routing structure of the REST API Service Endpoint. 
+    Node.js Express Framework provides a way of nicely constructing the API routes and separate the logic into controllers in a MVC pattern returning JSON data instead of rendered views. File api/routes/serviceRoutes.js presented in listing \ref{lst:routes} show the routing structure of the REST API Service Endpoint. 
 
 \begin{lstlisting}[language=Python, caption=Node.js REST API Routes, label={lst:routes}, basicstyle=\scriptsize]
     ...
@@ -88,7 +88,7 @@ The server exposes HTTP REST endpoint service to manage devices and subscribe to
     ...
 \end{lstlisting}
 
-\subsubsection*{Stream Data}
+\subsubsection*{Streaming Data}
 The server enables live stream features by implementing the SSE pattern. SSE is an altered HTTP Get Method, where the connection is kept alive. The server sends events event over this open connection to applications, that utilizes this channel and live updates the UI. Below listing \ref{lst:sse} shows how it is implemented.
 
 \begin{lstlisting}[language=Python, caption=Server Sent Event, label={lst:sse}, basicstyle=\scriptsize]

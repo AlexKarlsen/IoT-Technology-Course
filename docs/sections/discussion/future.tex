@@ -1,6 +1,6 @@
 \subsection*{Future work}
 Future work of the system could consist of the following:\\
-Using upper and lower bound for all the sensors, regarding sending/triggering alarms, as this currently only works for temperetur, and as an upper bound.\\
-For the developed prototype, the server can only be requested for all the measurements. This could be modified, so the server could be queried for specific time periode, and possibly only the send the average value for a given interval. A cron job could also be made, that sometimes sorts the data.\\
-The device twin could be made more complex, e.i. holding information regarding sampling rate, battery level etc.\\
-Additionally the prototype could be expanded with an additional Pi, to show the system running with more weather stations, this should be rather simple, as the system already includes device id's.\\ 
+We have only implemented thresholds with upper bound. Future work implementing upper and lower bound for all the sensor types, for a more comprehensive monitoring scheme, to make it more useful in real-life applications.\\
+For the developed prototype, the server can only be requested for all the measurements. This could be modified, so the server could be queried for specific time periods, and possibly only send an average value for a given time interval. A cron job could be implemented to aggregate the highly correlated telemetry data. \\
+The device twin could be made more comprehensive, containing information regarding sampling rate, battery level etc.\\
+Additionally the prototype could be expanded with additional Pis, to show the system running with more weather stations. The solution should already be able handle multiple device, as the system already includes device id's. We have quickly tested the system with two locally hosted devices sending generated data.\\ 
